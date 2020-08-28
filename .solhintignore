@@ -1,0 +1,38 @@
+# SOLIDITY 4 #
+
+## mock
+contracts/sol4/mock/MockERC20.sol
+contracts/sol4/mock/MockPermission.sol
+contracts/sol4/mock/MockUtils.sol
+contracts/sol4/mock/MockUtils2.sol
+contracts/sol4/mock/MockUtils3.sol
+contracts/sol4/mock/MockWithdrawable.sol
+contracts/sol4/mock/TokenNoDecimals.sol
+
+# SOLIDITY 5 #
+
+## main
+contracts/sol5/IERC20.sol
+
+## mock
+contracts/sol5/mock/MockPermissionGroups2.sol
+contracts/sol5/mock/MockUtils4.sol
+contracts/sol5/mock/MockWithdrawable2.sol
+contracts/sol5/mock/Token.sol
+
+## utils
+contracts/sol5/utils/PermissionGroups2.sol
+contracts/sol5/utils/Utils4.sol
+contracts/sol5/utils/Withdrawable2.sol
+
+## SOLIDITY 6 ##
+
+## mock
+contracts/sol6/mock/TestTokenNotReturn.sol
+contracts/sol6/mock/Token.sol
+
+## utils
+contracts/sol6/utils/Utils5.sol
+contracts/sol6/utils/zeppelin/Address.sol
+contracts/sol6/utils/zeppelin/SafeERC20.sol
+contracts/sol6/utils/zeppelin/SafeMath.sol
