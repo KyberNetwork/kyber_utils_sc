@@ -1,0 +1,36 @@
+# SOLIDITY 4 #
+
+## utils
+contracts/sol4/ERC20Interface.sol
+contracts/sol4/PermissionGroups.sol
+contracts/sol4/Utils.sol
+contracts/sol4/Utils2.sol
+contracts/sol4/Utils3.sol
+contracts/sol4/Withdrawable.sol
+
+## mock
+contracts/sol4/mock/MockERC20.sol
+contracts/sol4/mock/MockUtils.sol
+contracts/sol4/mock/MockUtils2.sol
+contracts/sol4/mock/MockUtils3.sol
+contracts/sol4/mock/TestToken.sol
+contracts/sol4/mock/TokenNoDecimals.sol
+
+# SOLIDITY 5 #
+
+## utils
+contracts/sol5/Utils4.sol
+contracts/sol5/Withdrawable2.sol
+
+## SOLIDITY 6 ##
+
+## utils
+contracts/sol6/Utils5.sol
+contracts/sol6/Withdrawable3.sol
+contracts/sol6/WithdrawableNoModifiers.sol
+contracts/sol6/zeppelin/Address.sol
+contracts/sol6/zeppelin/SafeERC20.sol
+contracts/sol6/zeppelin/SafeMath.sol
+
+## mock
+contracts/sol6/mock/Token.sol
