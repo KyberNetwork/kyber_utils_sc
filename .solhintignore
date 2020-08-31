@@ -21,18 +21,19 @@ contracts/sol5/mock/MockWithdrawable2.sol
 contracts/sol5/mock/Token.sol
 
 ## utils
-contracts/sol5/utils/PermissionGroups2.sol
-contracts/sol5/utils/Utils4.sol
-contracts/sol5/utils/Withdrawable2.sol
+contracts/sol5/PermissionGroups2.sol
+contracts/sol5/Utils4.sol
+contracts/sol5/Withdrawable2.sol
 
 ## SOLIDITY 6 ##
 
 ## mock
-contracts/sol6/mock/TestTokenNotReturn.sol
 contracts/sol6/mock/Token.sol
 
 ## utils
-contracts/sol6/utils/Utils5.sol
-contracts/sol6/utils/zeppelin/Address.sol
-contracts/sol6/utils/zeppelin/SafeERC20.sol
-contracts/sol6/utils/zeppelin/SafeMath.sol
+contracts/sol6/Utils5.sol
+contracts/sol6/Withdrawable3.sol
+contracts/sol6/WithdrawableNoModifiers.sol
+contracts/sol6/zeppelin/Address.sol
+contracts/sol6/zeppelin/SafeERC20.sol
+contracts/sol6/zeppelin/SafeMath.sol

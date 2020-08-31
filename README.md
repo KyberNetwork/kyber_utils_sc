@@ -9,7 +9,7 @@ We use `yarn` as the package manager. You may use `npm` and `npx` instead, but c
 1. Clone this repo
 2. `yarn`
 
-## Compilation with Buidler
+## Compilation
 1. `yarn compile` to compile contracts for all solidity versions.
 2. `yarn compileSol6` to compile only sol6 contracts
 
