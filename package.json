@@ -11,7 +11,7 @@
     "compile": "./compile.sh",
     "compileSol6": "./compileSol6.sh",
     "coverage": "./coverage.sh",
-    "lint": "npx solhint 'contracts/sol6/**/*.sol'"
+    "lint": "npx solhint 'contracts/**/*.sol'"
   },
   "repository": {
     "type": "git",
