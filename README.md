@@ -13,7 +13,7 @@ We use `yarn` as the package manager. You may use `npm` and `npx` instead, but c
 1. `yarn compile` to compile contracts for all solidity versions.
 2. `yarn compileSol6` to compile only sol6 contracts
 
-## Testing with Buidler
+## Testing
 1. If contracts have not been compiled, run `yarn compile`. This step can be skipped subsequently.
 2. Run full regression `yarn test`
 3. Use `./test.sh -f` for running a specific test file.
@@ -25,9 +25,4 @@ or
 - `./test.sh -f ./test/sol6/utils5.js` (Test only utils5.js for sol6)
 
 ## Coverage with `buidler-coverage`
-1. Run `yarn converage`
-2. Use `./coverage.sh -f` for running a specific test file.
-
-### Example Commands
 - `yarn coverage` (Runs coverage for all applicable files)
-`./coverage.sh -f ./test/sol6/utils5.js` (Coverage for only utils5.js)

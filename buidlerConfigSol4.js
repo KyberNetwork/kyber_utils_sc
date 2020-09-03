@@ -1,5 +1,6 @@
 usePlugin("@nomiclabs/buidler-truffle5");
 usePlugin("@nomiclabs/buidler-web3");
+usePlugin("solidity-coverage");
 
 module.exports = {
   defaultNetwork: "buidlerevm",

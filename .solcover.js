@@ -1,28 +1,22 @@
 const fs = require('fs');
 const path = require('path');
-const mv = require('mv');
+const cp = require('cp');
 
-const previousArtifactsPath = path.join(__dirname, '.coverageArtifacts');
+const previousArtifactsPath = path.join(__dirname, 'artifacts');
 const targetArtifactPath = path.join(__dirname, '.coverage_artifacts');
 
-function moveFiles(config) {
+function copyFiles(config) {
     fs.readdir(previousArtifactsPath, (err, files) => {
         if (err) console.log(err);
         
         if (files) {
             files.forEach(file => {
-                mv(path.join(previousArtifactsPath, file), path.join(targetArtifactPath, file), err => {
+                cp(path.join(previousArtifactsPath, file), path.join(targetArtifactPath, file), err => {
                     if (err) throw err;
                     console.log(`Moving ` + file);
                 });
             })
         }
-    })
-}
-
-function removeArtifactsDir(config) {
-    fs.rmdir(previousArtifactsPath, err => {
-        if (err) console.log(err);
     })
 }
 
@@ -33,6 +27,5 @@ module.exports = {
     },
     skipFiles: ['mock/'],
     istanbulReporter: ['html','json'],
-    onCompileComplete: moveFiles,
-    onIstanbulComplete: removeArtifactsDir
+    onCompileComplete: copyFiles
 }

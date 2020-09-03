@@ -34,7 +34,7 @@ contract('PermissionGroups3', function (accounts) {
       let txResult = await permissionsInst.transferAdmin(user, {from: mainAdmin});
       console.log(txResult.logs[0].args.pendingAdmin);
       expectEvent(txResult, 'TransferAdminPending', {
-        pendingAdmin: user
+        pendingAdmin: user,
       });
     });
 
@@ -43,7 +43,7 @@ contract('PermissionGroups3', function (accounts) {
       let txResult = await permissionsInst.claimAdmin({from: user});
       expectEvent(txResult, 'AdminClaimed', {
         newAdmin: user,
-        previousAdmin: mainAdmin
+        previousAdmin: mainAdmin,
       });
     });
 
@@ -51,7 +51,7 @@ contract('PermissionGroups3', function (accounts) {
       let txResult = await permissionsInst.addAlerter(user, {from: mainAdmin});
       expectEvent(txResult, 'AlerterAdded', {
         newAlerter: user,
-        isAdd: true
+        isAdd: true,
       });
     });
 
@@ -59,7 +59,7 @@ contract('PermissionGroups3', function (accounts) {
       let txResult = await permissionsInst.addOperator(user, {from: mainAdmin});
       expectEvent(txResult, 'OperatorAdded', {
         newOperator: user,
-        isAdd: true
+        isAdd: true,
       });
     });
   });
@@ -70,10 +70,7 @@ contract('PermissionGroups3', function (accounts) {
     });
 
     it('should revert request admin change quickly for non-admin', async () => {
-      await expectRevert(
-        permissionsInst.transferAdminQuickly(secondAdmin, {from: secondAdmin}),
-        'only admin'
-      );
+      await expectRevert(permissionsInst.transferAdminQuickly(secondAdmin, {from: secondAdmin}), 'only admin');
     });
 
     it('should revert claim admin if transferAdmin was not initialised', async () => {
@@ -83,32 +80,20 @@ contract('PermissionGroups3', function (accounts) {
     it('should test quick admin transfer successful run', async () => {
       await permissionsInst.transferAdminQuickly(secondAdmin, {from: mainAdmin});
       Helper.assertEqual(await permissionsInst.admin(), secondAdmin, 'failed to transfer admin');
-      await expectRevert(
-        permissionsInst.transferAdminQuickly(secondAdmin, {from: mainAdmin}),
-        'only admin'
-      );
+      await expectRevert(permissionsInst.transferAdminQuickly(secondAdmin, {from: mainAdmin}), 'only admin');
 
       //and transfer back to mainAdmin
       await permissionsInst.transferAdminQuickly(mainAdmin, {from: secondAdmin});
       Helper.assertEqual(await permissionsInst.admin(), mainAdmin, 'failed to transfer admin');
-      await expectRevert(
-        permissionsInst.transferAdminQuickly(mainAdmin, {from: secondAdmin}),
-        'only admin'
-      );
+      await expectRevert(permissionsInst.transferAdminQuickly(mainAdmin, {from: secondAdmin}), 'only admin');
     });
 
     it('should revert for transferring admin to zeroAddress', async () => {
-      await expectRevert(
-        permissionsInst.transferAdmin(zeroAddress, {from: mainAdmin}),
-        'new admin 0'
-      );
+      await expectRevert(permissionsInst.transferAdmin(zeroAddress, {from: mainAdmin}), 'new admin 0');
     });
 
     it('should revert for transferring admin quickly to zeroAddress', async () => {
-      await expectRevert(
-        permissionsInst.transferAdminQuickly(zeroAddress, {from: mainAdmin}),
-        'admin 0'
-      );
+      await expectRevert(permissionsInst.transferAdminQuickly(zeroAddress, {from: mainAdmin}), 'admin 0');
     });
 
     it('should test successful admin change', async () => {
@@ -142,19 +127,16 @@ contract('PermissionGroups3', function (accounts) {
       await permissionsInst.addOperator(secondAdmin, {from: mainAdmin});
       await permissionsInst.addOperator(operator, {from: mainAdmin});
       let operators = await permissionsInst.getOperators();
-      isOperator = operators.findIndex(op => op == operator) != -1;
+      isOperator = operators.findIndex((op) => op == operator) != -1;
       assert.isTrue(isOperator, 'second admin not operator.');
       operators = await permissionsInst.getOperators();
-      isOperator = operators.findIndex(op => op == operator) != -1;
+      isOperator = operators.findIndex((op) => op == operator) != -1;
       assert.isTrue(isOperator, 'operator not operator.');
     });
 
     it('should revert for adding existing operator', async () => {
       await permissionsInst.addOperator(operator, {from: mainAdmin});
-      await expectRevert(
-        permissionsInst.addOperator(operator, {from: mainAdmin}),
-        'operator exists'
-      );
+      await expectRevert(permissionsInst.addOperator(operator, {from: mainAdmin}), 'operator exists');
     });
 
     it('should test set rate is rejected for non operator', async () => {
@@ -175,25 +157,19 @@ contract('PermissionGroups3', function (accounts) {
     });
 
     it('should revert removing non-existent operator', async () => {
-      await expectRevert(
-        permissionsInst.removeOperator(operator, {from: mainAdmin}),
-        'not operator'
-      );
+      await expectRevert(permissionsInst.removeOperator(operator, {from: mainAdmin}), 'not operator');
     });
 
     it('should revert removing operator by non-admin', async () => {
       await permissionsInst.addOperator(operator, {from: mainAdmin});
-      await expectRevert(
-        permissionsInst.removeOperator(operator, {from: secondAdmin}),
-        'only admin'
-      );
+      await expectRevert(permissionsInst.removeOperator(operator, {from: secondAdmin}), 'only admin');
     });
 
     it('should remove operator by admin', async () => {
       await permissionsInst.addOperator(operator, {from: mainAdmin});
       await permissionsInst.removeOperator(operator, {from: mainAdmin});
       let operators = await permissionsInst.getOperators();
-      isOperator = operators.findIndex(op => op == operator) != -1;
+      isOperator = operators.findIndex((op) => op == operator) != -1;
       assert.isFalse(isOperator, 'should have removed operator');
     });
 
@@ -203,13 +179,10 @@ contract('PermissionGroups3', function (accounts) {
         let addressToAdd = zeroAddress.substring(0, zeroAddress.length - intLength) + i.toString();
         await permissionsInst.addOperator(addressToAdd, {from: mainAdmin});
         let operators = await permissionsInst.getOperators();
-        isOperator = operators.findIndex(op => op == addressToAdd) != -1;
+        isOperator = operators.findIndex((op) => op == addressToAdd) != -1;
         assert.isTrue(isOperator, 'operator ' + i + " wasn't added successfully.");
       }
-      await expectRevert(
-        permissionsInst.addOperator(operator, {from: mainAdmin}),
-        'max operators'
-      );
+      await expectRevert(permissionsInst.addOperator(operator, {from: mainAdmin}), 'max operators');
     });
 
     it('should removing MAX_GROUP_SIZE operators.', async () => {
@@ -224,7 +197,7 @@ contract('PermissionGroups3', function (accounts) {
         addressToAdd = zeroAddress.substring(0, zeroAddress.length - intLength) + i.toString();
         await permissionsInst.removeOperator(addressToAdd, {from: mainAdmin});
         let operators = await permissionsInst.getOperators();
-        isOperator = operators.findIndex(op => op == addressToAdd) != -1;
+        isOperator = operators.findIndex((op) => op == addressToAdd) != -1;
         assert.isFalse(isOperator, 'operator ' + i + " wasn't removed successfully.");
       }
     });
@@ -239,9 +212,9 @@ contract('PermissionGroups3', function (accounts) {
       await permissionsInst.addAlerter(secondAdmin, {from: mainAdmin});
       await permissionsInst.addAlerter(alerter, {from: mainAdmin});
       let alerters = await permissionsInst.getAlerters();
-      let isAlerter = alerters.findIndex(alert => alert == secondAdmin) != -1;
+      let isAlerter = alerters.findIndex((alert) => alert == secondAdmin) != -1;
       assert.isTrue(isAlerter, 'second admin not alerter.');
-      isAlerter = alerters.findIndex(alert => alert == alerter) != -1;
+      isAlerter = alerters.findIndex((alert) => alert == alerter) != -1;
       assert.isTrue(isAlerter, 'alerter not alerter.');
     });
 
@@ -278,17 +251,14 @@ contract('PermissionGroups3', function (accounts) {
 
     it('should revert removing alerter by non-admin', async () => {
       await permissionsInst.addAlerter(alerter, {from: mainAdmin});
-      await expectRevert(
-        permissionsInst.removeAlerter(alerter, {from: secondAdmin}),
-        'only admin'
-      );
+      await expectRevert(permissionsInst.removeAlerter(alerter, {from: secondAdmin}), 'only admin');
     });
 
     it('should remove alerter by admin', async () => {
       await permissionsInst.addAlerter(alerter, {from: mainAdmin});
       await permissionsInst.removeAlerter(alerter, {from: mainAdmin});
       let alerters = await permissionsInst.getAlerters();
-      let isAlerter = alerters.findIndex(alert => alert == alerter) != -1;
+      let isAlerter = alerters.findIndex((alert) => alert == alerter) != -1;
       assert.isFalse(isAlerter, 'should have removed alerter');
     });
 
@@ -298,7 +268,7 @@ contract('PermissionGroups3', function (accounts) {
         let addressToAdd = zeroAddress.substring(0, zeroAddress.length - intLength) + i.toString();
         await permissionsInst.addAlerter(addressToAdd, {from: mainAdmin});
         let alerters = await permissionsInst.getAlerters();
-        let isAlerter = alerters.findIndex(alert => alert == addressToAdd) != -1;
+        let isAlerter = alerters.findIndex((alert) => alert == addressToAdd) != -1;
         assert.isTrue(isAlerter, 'alerter ' + i + " wasn't added successfully.");
       }
       await expectRevert(permissionsInst.addAlerter(alerter, {from: mainAdmin}), 'max alerters');
@@ -316,7 +286,7 @@ contract('PermissionGroups3', function (accounts) {
         addressToAdd = zeroAddress.substring(0, zeroAddress.length - intLength) + i.toString();
         await permissionsInst.removeAlerter(addressToAdd, {from: mainAdmin});
         let alerters = await permissionsInst.getAlerters();
-        let isAlerter = alerters.findIndex(alert => alert == addressToAdd) != -1;
+        let isAlerter = alerters.findIndex((alert) => alert == addressToAdd) != -1;
         assert.isFalse(isAlerter, 'alerter ' + i + " wasn't removed successfully.");
       }
     });

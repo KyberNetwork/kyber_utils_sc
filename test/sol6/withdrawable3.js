@@ -29,11 +29,7 @@ contract('Withdrawable3', function (accounts) {
       // transfer some tokens to withdrawable.
       await token.transfer(withdrawableInst.address, initialTokenBalance, {from: accounts[2]});
       let balance = await token.balanceOf(withdrawableInst.address);
-      Helper.assertEqual(
-        balance,
-        initialTokenBalance,
-        'unexpected balance in withdrawable contract.'
-      );
+      Helper.assertEqual(balance, initialTokenBalance, 'unexpected balance in withdrawable contract.');
     });
 
     it('should test withdraw token success for admin.', async function () {
@@ -68,11 +64,7 @@ contract('Withdrawable3', function (accounts) {
       );
 
       let balance = await token.balanceOf(withdrawableInst.address);
-      Helper.assertEqual(
-        balance,
-        initialTokenBalance,
-        'unexpected balance in withdrawble contract.'
-      );
+      Helper.assertEqual(balance, initialTokenBalance, 'unexpected balance in withdrawble contract.');
     });
   });
 
@@ -82,11 +74,7 @@ contract('Withdrawable3', function (accounts) {
       // transfer some ETH
       await withdrawableInst.send(initialEtherBalance, {from: accounts[4]});
       let balance = await Helper.getBalancePromise(withdrawableInst.address);
-      Helper.assertEqual(
-        balance,
-        initialEtherBalance,
-        'unexpected balance in withdrawable contract.'
-      );
+      Helper.assertEqual(balance, initialEtherBalance, 'unexpected balance in withdrawable contract.');
     });
 
     it('should test withdraw ether success for admin.', async function () {
@@ -103,19 +91,14 @@ contract('Withdrawable3', function (accounts) {
 
     it('should test withdraw ether reject for non admin.', async function () {
       // try to withdraw the ether from withdrawableInst
-      await expectRevert(
-        withdrawableInst.withdrawEther(etherWithdrawAmt, user, {from: user}),
-        'only admin'
-      );
+      await expectRevert(withdrawableInst.withdrawEther(etherWithdrawAmt, user, {from: user}), 'only admin');
     });
 
     it('should test withdraw ether reject when amount too high.', async function () {
       etherWithdrawAmt = etherWithdrawAmt.add(initialEtherBalance);
 
       // try to withdraw the ether from withdrawableInst
-      await expectRevert.unspecified(
-        withdrawableInst.withdrawEther(etherWithdrawAmt, user, {from: admin})
-      );
+      await expectRevert.unspecified(withdrawableInst.withdrawEther(etherWithdrawAmt, user, {from: admin}));
     });
   });
 });
