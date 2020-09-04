@@ -9,12 +9,12 @@ before_install:
 
 env:
   global:
-    - COVERAGE_BRANCH=master
+    - COVERAGE_BRANCH=reorg
 
 jobs:
   include:
     - env:
-        - TEST_PART: regression
+        - TEST_PART: Regression
     - env:
         - TEST_PART: Coverage
 
@@ -25,31 +25,6 @@ before_script:
   - yarn lint
 
 script:
-  - ./compile.sh
+  - yarn compile
   - .travis/test-part.sh
   - .travis/report.sh
-
-deploy:
-  - provider: s3
-    access_key_id: $AWS_ACCESS_KEY_ID
-    secret_access_key: $AWS_SECRET_ACCESS_KEY
-    bucket: katalyst-coverage.knstats.com
-    region: ap-southeast-1
-    acl: public_read
-    local_dir: report
-    upload_dir: report
-    skip_cleanup: true
-    on:
-      all_branches: true
-      condition: $TEST_PART = Sol6
-  - provider: s3
-    access_key_id: $AWS_ACCESS_KEY_ID
-    secret_access_key: $AWS_SECRET_ACCESS_KEY
-    bucket: katalyst-coverage.knstats.com
-    region: ap-southeast-1
-    acl: public_read
-    local_dir: coverage
-    skip_cleanup: true
-    on:
-      branch: $COVERAGE_BRANCH
-      condition: $TEST_PART = Coverage

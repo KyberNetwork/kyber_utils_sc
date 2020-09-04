@@ -136,7 +136,7 @@ module.exports = {
           balance: "100000000000000000000000000000000"
         }
       ]
-    }    
+    }
   },
   
   solc: {
@@ -149,7 +149,7 @@ module.exports = {
     tests: "./test/sol5"
   },
 
-  mocha: {
-    enableTimeouts: false
+  mocha: {	
+    enableTimeouts: false	
   }
 };

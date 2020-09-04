@@ -149,7 +149,7 @@ module.exports = {
     tests: "./test/sol4"
   },
 
-  mocha: {
-    enableTimeouts: false
+  mocha: {	
+    enableTimeouts: false	
   }
 };
