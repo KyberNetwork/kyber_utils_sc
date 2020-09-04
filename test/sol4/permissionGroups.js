@@ -33,7 +33,7 @@ contract('PermissionGroups', function (accounts) {
 
   it('should test claim admin is rejected for unrelevant address.', async function () {
     try {
-      await permissionsInst.claimAdmin();
+        await permissionsInst.claimAdmin();
       assert(false, 'throw was expected in line above.');
     } catch (e) {
       assert(Helper.isRevertErrorMessage(e), 'expected throw but got: ' + e);
