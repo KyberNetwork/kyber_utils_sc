@@ -8,7 +8,7 @@ contract PermissionGroups2 {
     mapping(address => bool) internal alerters;
     address[] internal operatorsGroup;
     address[] internal alertersGroup;
-      uint256 internal constant MAX_GROUP_SIZE = 50;
+    uint256 internal constant MAX_GROUP_SIZE = 50;
 
     constructor(address _admin) public {
         require(_admin != address(0), "Admin 0");
