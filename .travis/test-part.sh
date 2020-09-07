@@ -9,16 +9,4 @@ case "$test_part" in
 Regression)
     yarn test
     ;;
-Coverage)
-    if [[ $TRAVIS_EVENT_TYPE != "push" ]]; then
-        echo "Only running coverage on merge request or direct push"
-    elif [[ $TRAVIS_BRANCH == $COVERAGE_BRANCH ]]; then
-        yarn coverage || true
-    else
-        echo "Not running coverage on $TRAVIS_BRANCH"
-    fi
-    ;;
-*)
-    echo "test case not define yet"
-    ;;
 esac

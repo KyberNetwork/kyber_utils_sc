@@ -13,7 +13,7 @@
     "c": "./compile.sh",
     "compileSol6": "./compileSol6.sh",
     "coverage": "./coverage.sh",
-    "lint": "yarn solhint 'contracts/**/*.sol' && yarn prettier -c 'test/**/*.js'"
+    "lint": "yarn solhint 'contracts/**/*.sol' && yarn prettier -c './**/*.js'"
   },
   "repository": {
     "type": "git",

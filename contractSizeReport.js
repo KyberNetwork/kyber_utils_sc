@@ -59,7 +59,7 @@ async function compareContractSize() {
   let remoteReport = await getRemoteReport();
   if (!remoteReport) {
     console.log(`Could not get report for ${argv.branch}`);
-    console.log("Current contract size report");
+    console.log('Current contract size report');
     console.table(contractSizeReport);
     return false;
   }

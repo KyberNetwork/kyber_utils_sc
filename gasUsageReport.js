@@ -22,7 +22,7 @@ async function getLocalReport() {
     reportFile = `report/${process.env.TRAVIS_BRANCH}/gasUsed.json`;
   }
   let report = JSON.parse(fs.readFileSync(reportFile, 'utf8'));
-  return report
+  return report;
 }
 
 async function compareGasConsumtion() {
