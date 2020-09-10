@@ -1,0 +1,47 @@
+{
+  "name": "kyber-utils-sc",
+  "version": "2.0.0",
+  "description": "This repository has the utils contracts for the Kyber protocol.",
+  "main": "truffle.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "./test.sh",
+    "t": "./test.sh",
+    "compile": "./compile.sh",
+    "c": "./compile.sh",
+    "compileSol6": "./compileSol6.sh",
+    "coverage": "./coverage.sh",
+    "lint": "yarn solhint 'contracts/**/*.sol' && yarn prettier -c './**/*.js'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KyberNetwork/kyber_utils_sc.git"
+  },
+  "author": "Kyber SC Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KyberNetwork/kyber_utils_sc/issues"
+  },
+  "homepage": "https://github.com/KyberNetwork/kyber_utils_sc#readme",
+  "dependencies": {
+    "chai-as-promised": "7.1.1",
+    "mathjs": "7.2.0",
+    "solhint": "3.2.0",
+    "yargs": "15.4.1"
+  },
+  "devDependencies": {
+    "@nomiclabs/buidler": "1.4.4",
+    "@nomiclabs/buidler-truffle5": "1.3.4",
+    "@nomiclabs/buidler-web3": "1.3.4",
+    "@openzeppelin/test-helpers": "0.5.6",
+    "chai": "4.2.0",
+    "chai-bn": "0.2.1",
+    "cp": "^0.2.0",
+    "got": "^11.5.2",
+    "prettier": "2.1.1",
+    "prettier-plugin-solidity": "1.0.0-alpha.56",
+    "solidity-coverage": "0.7.10"
+  }
+}
