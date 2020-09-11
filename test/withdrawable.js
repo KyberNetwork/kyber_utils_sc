@@ -1,7 +1,7 @@
-const MockWithdrawable = artifacts.require('MockWithdrawable3.sol');
+const MockWithdrawable = artifacts.require('MockWithdrawable.sol');
 const TestToken = artifacts.require('Token.sol');
 
-const Helper = require('../helper.js');
+const Helper = require('./helper.js');
 const BN = web3.utils.BN;
 
 let token;
@@ -13,10 +13,10 @@ let tokenWithdrawAmt = new BN(60);
 let initialEtherBalance = new BN(10);
 let etherWithdrawAmt = new BN(3);
 
-const {zeroBN} = require('../helper.js');
+const {zeroBN} = require('./helper.js');
 const {expectRevert} = require('@openzeppelin/test-helpers');
 
-contract('Withdrawable3', function (accounts) {
+contract('Withdrawable', function (accounts) {
   before('should init globals, deploy test token', async function () {
     user = accounts[0];
     admin = accounts[1];

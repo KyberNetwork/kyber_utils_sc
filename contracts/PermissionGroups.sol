@@ -1,32 +1,40 @@
-pragma solidity 0.5.11;
+pragma solidity 0.6.6;
 
+contract PermissionGroups {
+    uint256 internal constant MAX_GROUP_SIZE = 50;
 
-contract PermissionGroups2 {
     address public admin;
     address public pendingAdmin;
     mapping(address => bool) internal operators;
     mapping(address => bool) internal alerters;
     address[] internal operatorsGroup;
     address[] internal alertersGroup;
-    uint256 internal constant MAX_GROUP_SIZE = 50;
+
+    event AdminClaimed(address newAdmin, address previousAdmin);
+
+    event TransferAdminPending(address pendingAdmin);
+
+    event OperatorAdded(address newOperator, bool isAdd);
+
+    event AlerterAdded(address newAlerter, bool isAdd);
 
     constructor(address _admin) public {
-        require(_admin != address(0), "Admin 0");
+        require(_admin != address(0), "admin 0");
         admin = _admin;
     }
 
     modifier onlyAdmin() {
-        require(msg.sender == admin, "Only admin");
+        require(msg.sender == admin, "only admin");
         _;
     }
 
     modifier onlyOperator() {
-        require(operators[msg.sender], "Only operator");
+        require(operators[msg.sender], "only operator");
         _;
     }
 
     modifier onlyAlerter() {
-        require(alerters[msg.sender], "Only alerter");
+        require(alerters[msg.sender], "only alerter");
         _;
     }
 
@@ -38,14 +46,12 @@ contract PermissionGroups2 {
         return alertersGroup;
     }
 
-    event TransferAdminPending(address pendingAdmin);
-
     /**
      * @dev Allows the current admin to set the pendingAdmin address.
      * @param newAdmin The address to transfer ownership to.
      */
     function transferAdmin(address newAdmin) public onlyAdmin {
-        require(newAdmin != address(0), "New admin 0");
+        require(newAdmin != address(0), "new admin 0");
         emit TransferAdminPending(newAdmin);
         pendingAdmin = newAdmin;
     }
@@ -55,13 +61,11 @@ contract PermissionGroups2 {
      * @param newAdmin The address to transfer ownership to.
      */
     function transferAdminQuickly(address newAdmin) public onlyAdmin {
-        require(newAdmin != address(0), "Admin 0");
+        require(newAdmin != address(0), "admin 0");
         emit TransferAdminPending(newAdmin);
         emit AdminClaimed(newAdmin, admin);
         admin = newAdmin;
     }
-
-    event AdminClaimed(address newAdmin, address previousAdmin);
 
     /**
      * @dev Allows the pendingAdmin address to finalize the change admin process.
@@ -73,11 +77,9 @@ contract PermissionGroups2 {
         pendingAdmin = address(0);
     }
 
-    event AlerterAdded(address newAlerter, bool isAdd);
-
     function addAlerter(address newAlerter) public onlyAdmin {
-        require(!alerters[newAlerter], "Alerter exists"); // prevent duplicates.
-        require(alertersGroup.length < MAX_GROUP_SIZE, "Max alerters");
+        require(!alerters[newAlerter], "alerter exists"); // prevent duplicates.
+        require(alertersGroup.length < MAX_GROUP_SIZE, "max alerters");
 
         emit AlerterAdded(newAlerter, true);
         alerters[newAlerter] = true;
@@ -85,7 +87,7 @@ contract PermissionGroups2 {
     }
 
     function removeAlerter(address alerter) public onlyAdmin {
-        require(alerters[alerter], "Not alerter");
+        require(alerters[alerter], "not alerter");
         alerters[alerter] = false;
 
         for (uint256 i = 0; i < alertersGroup.length; ++i) {
@@ -98,11 +100,9 @@ contract PermissionGroups2 {
         }
     }
 
-    event OperatorAdded(address newOperator, bool isAdd);
-
     function addOperator(address newOperator) public onlyAdmin {
-        require(!operators[newOperator], "Operator exists"); // prevent duplicates.
-        require(operatorsGroup.length < MAX_GROUP_SIZE, "Max operators");
+        require(!operators[newOperator], "operator exists"); // prevent duplicates.
+        require(operatorsGroup.length < MAX_GROUP_SIZE, "max operators");
 
         emit OperatorAdded(newOperator, true);
         operators[newOperator] = true;
@@ -110,7 +110,7 @@ contract PermissionGroups2 {
     }
 
     function removeOperator(address operator) public onlyAdmin {
-        require(operators[operator], "Not operator");
+        require(operators[operator], "not operator");
         operators[operator] = false;
 
         for (uint256 i = 0; i < operatorsGroup.length; ++i) {

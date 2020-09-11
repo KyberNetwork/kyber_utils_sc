@@ -1,10 +1,10 @@
 pragma solidity 0.6.6;
 
 import "./IERC20.sol";
-import "./PermissionGroups3.sol";
+import "./PermissionGroups.sol";
 
-contract Withdrawable3 is PermissionGroups3 {
-    constructor(address _admin) public PermissionGroups3(_admin) {}
+contract Withdrawable is PermissionGroups {
+    constructor(address _admin) public PermissionGroups(_admin) {}
 
     event TokenWithdraw(IERC20 token, uint256 amount, address sendTo);
 

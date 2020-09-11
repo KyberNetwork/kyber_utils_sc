@@ -1,9 +1,9 @@
-let MockPermission = artifacts.require('./MockPermissionGroups2.sol');
-let Permission = artifacts.require('./PermissionGroups2.sol');
-let Helper = require('../helper.js');
+let MockPermission = artifacts.require('./MockPermissionGroupsNoModifiers.sol');
+let Permission = artifacts.require('./PermissionGroupsNoModifiers.sol');
+let Helper = require('./helper.js');
 
 const BN = web3.utils.BN;
-const {zeroAddress, zeroBN} = require('../helper.js');
+const {zeroAddress, zeroBN} = require('./helper.js');
 const {expectEvent, expectRevert} = require('@openzeppelin/test-helpers');
 const MAX_GROUP_SIZE = 50;
 
@@ -15,7 +15,7 @@ let operator;
 let alerter;
 let user;
 
-contract('PermissionGroups2', function (accounts) {
+contract('PermissionGroupsNoModifiers', function (accounts) {
   before('init global accounts', async () => {
     // global inits in first test
     user = accounts[0];
@@ -66,11 +66,11 @@ contract('PermissionGroups2', function (accounts) {
 
   describe('test admin', async () => {
     it('should revert request admin change for non-admin', async () => {
-      await expectRevert(permissionsInst.transferAdmin(user, {from: user}), 'Only admin');
+      await expectRevert(permissionsInst.transferAdmin(user, {from: user}), 'only admin');
     });
 
     it('should revert request admin change quickly for non-admin', async () => {
-      await expectRevert(permissionsInst.transferAdminQuickly(secondAdmin, {from: secondAdmin}), 'Only admin');
+      await expectRevert(permissionsInst.transferAdminQuickly(secondAdmin, {from: secondAdmin}), 'only admin');
     });
 
     it('should revert claim admin if transferAdmin was not initialised', async () => {
@@ -80,20 +80,20 @@ contract('PermissionGroups2', function (accounts) {
     it('should test quick admin transfer successful run', async () => {
       await permissionsInst.transferAdminQuickly(secondAdmin, {from: mainAdmin});
       Helper.assertEqual(await permissionsInst.admin(), secondAdmin, 'failed to transfer admin');
-      await expectRevert(permissionsInst.transferAdminQuickly(secondAdmin, {from: mainAdmin}), 'Only admin');
+      await expectRevert(permissionsInst.transferAdminQuickly(secondAdmin, {from: mainAdmin}), 'only admin');
 
       //and transfer back to mainAdmin
       await permissionsInst.transferAdminQuickly(mainAdmin, {from: secondAdmin});
       Helper.assertEqual(await permissionsInst.admin(), mainAdmin, 'failed to transfer admin');
-      await expectRevert(permissionsInst.transferAdminQuickly(mainAdmin, {from: secondAdmin}), 'Only admin');
+      await expectRevert(permissionsInst.transferAdminQuickly(mainAdmin, {from: secondAdmin}), 'only admin');
     });
 
     it('should revert for transferring admin to zeroAddress', async () => {
-      await expectRevert(permissionsInst.transferAdmin(zeroAddress, {from: mainAdmin}), 'New admin 0');
+      await expectRevert(permissionsInst.transferAdmin(zeroAddress, {from: mainAdmin}), 'new admin 0');
     });
 
     it('should revert for transferring admin quickly to zeroAddress', async () => {
-      await expectRevert(permissionsInst.transferAdminQuickly(zeroAddress, {from: mainAdmin}), 'Admin 0');
+      await expectRevert(permissionsInst.transferAdminQuickly(zeroAddress, {from: mainAdmin}), 'admin 0');
     });
 
     it('should test successful admin change', async () => {
@@ -114,13 +114,13 @@ contract('PermissionGroups2', function (accounts) {
     });
 
     it('should revert for zeroAddress in constructor', async () => {
-      await expectRevert(Permission.new(zeroAddress, {from: mainAdmin}), 'Admin 0');
+      await expectRevert(Permission.new(zeroAddress, {from: mainAdmin}), 'admin 0');
     });
   });
 
   describe('test operator', async () => {
     it('should revert adding operator for non admin', async () => {
-      await expectRevert(permissionsInst.addOperator(operator, {from: secondAdmin}), 'Only admin');
+      await expectRevert(permissionsInst.addOperator(operator, {from: secondAdmin}), 'only admin');
     });
 
     it('should successfully add and getting operators', async () => {
@@ -136,13 +136,13 @@ contract('PermissionGroups2', function (accounts) {
 
     it('should revert for adding existing operator', async () => {
       await permissionsInst.addOperator(operator, {from: mainAdmin});
-      await expectRevert(permissionsInst.addOperator(operator, {from: mainAdmin}), 'Operator exists');
+      await expectRevert(permissionsInst.addOperator(operator, {from: mainAdmin}), 'operator exists');
     });
 
     it('should test set rate is rejected for non operator', async () => {
       let newRate = new BN(10);
       await permissionsInst.addOperator(operator, {from: mainAdmin});
-      await expectRevert(permissionsInst.setRate(newRate, {from: accounts[6]}), 'Only operator');
+      await expectRevert(permissionsInst.setRate(newRate, {from: accounts[6]}), 'only operator');
 
       let rate = await permissionsInst.rate();
       Helper.assertEqual(rate, zeroBN, 'rate should be as initialized');
@@ -157,12 +157,12 @@ contract('PermissionGroups2', function (accounts) {
     });
 
     it('should revert removing non-existent operator', async () => {
-      await expectRevert(permissionsInst.removeOperator(operator, {from: mainAdmin}), 'Not operator');
+      await expectRevert(permissionsInst.removeOperator(operator, {from: mainAdmin}), 'not operator');
     });
 
     it('should revert removing operator by non-admin', async () => {
       await permissionsInst.addOperator(operator, {from: mainAdmin});
-      await expectRevert(permissionsInst.removeOperator(operator, {from: secondAdmin}), 'Only admin');
+      await expectRevert(permissionsInst.removeOperator(operator, {from: secondAdmin}), 'only admin');
     });
 
     it('should remove operator by admin', async () => {
@@ -182,7 +182,7 @@ contract('PermissionGroups2', function (accounts) {
         isOperator = operators.findIndex((op) => op == addressToAdd) != -1;
         assert.isTrue(isOperator, 'operator ' + i + " wasn't added successfully.");
       }
-      await expectRevert(permissionsInst.addOperator(operator, {from: mainAdmin}), 'Max operators');
+      await expectRevert(permissionsInst.addOperator(operator, {from: mainAdmin}), 'max operators');
     });
 
     it('should removing MAX_GROUP_SIZE operators.', async () => {
@@ -205,7 +205,7 @@ contract('PermissionGroups2', function (accounts) {
 
   describe('test alerter', async () => {
     it('should revert adding alerter for non admin', async () => {
-      await expectRevert(permissionsInst.addAlerter(user, {from: secondAdmin}), 'Only admin');
+      await expectRevert(permissionsInst.addAlerter(user, {from: secondAdmin}), 'only admin');
     });
 
     it('should successfully add and getting alerters', async () => {
@@ -220,7 +220,7 @@ contract('PermissionGroups2', function (accounts) {
 
     it('should revert for adding existing alerter', async () => {
       await permissionsInst.addAlerter(alerter, {from: mainAdmin});
-      await expectRevert(permissionsInst.addAlerter(alerter, {from: mainAdmin}), 'Alerter exists');
+      await expectRevert(permissionsInst.addAlerter(alerter, {from: mainAdmin}), 'alerter exists');
     });
 
     it('should revert stopping trade for non alerter.', async () => {
@@ -232,7 +232,7 @@ contract('PermissionGroups2', function (accounts) {
       let tradeActive = await permissionsInst.tradeActive();
       assert.isTrue(tradeActive, 'trade should have been activated.');
 
-      await expectRevert(permissionsInst.stopTrade({from: user}), 'Only alerter');
+      await expectRevert(permissionsInst.stopTrade({from: user}), 'only alerter');
     });
 
     it('should stop trade success for alerter.', async () => {
@@ -246,12 +246,12 @@ contract('PermissionGroups2', function (accounts) {
     });
 
     it('should revert removing non-existent alerter', async () => {
-      await expectRevert(permissionsInst.removeAlerter(alerter, {from: mainAdmin}), 'Not alerter');
+      await expectRevert(permissionsInst.removeAlerter(alerter, {from: mainAdmin}), 'not alerter');
     });
 
     it('should revert removing alerter by non-admin', async () => {
       await permissionsInst.addAlerter(alerter, {from: mainAdmin});
-      await expectRevert(permissionsInst.removeAlerter(alerter, {from: secondAdmin}), 'Only admin');
+      await expectRevert(permissionsInst.removeAlerter(alerter, {from: secondAdmin}), 'only admin');
     });
 
     it('should remove alerter by admin', async () => {
@@ -271,7 +271,7 @@ contract('PermissionGroups2', function (accounts) {
         let isAlerter = alerters.findIndex((alert) => alert == addressToAdd) != -1;
         assert.isTrue(isAlerter, 'alerter ' + i + " wasn't added successfully.");
       }
-      await expectRevert(permissionsInst.addAlerter(alerter, {from: mainAdmin}), 'Max alerters');
+      await expectRevert(permissionsInst.addAlerter(alerter, {from: mainAdmin}), 'max alerters');
     });
 
     it('should removing MAX_GROUP_SIZE alerters.', async () => {
