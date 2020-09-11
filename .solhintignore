@@ -1,10 +1,4 @@
 ## utils
-contracts/Utils.sol
-contracts/Withdrawable.sol
-contracts/WithdrawableNoModifiers.sol
 contracts/zeppelin/Address.sol
 contracts/zeppelin/SafeERC20.sol
 contracts/zeppelin/SafeMath.sol
-
-## mock
-contracts/mock/Token.sol

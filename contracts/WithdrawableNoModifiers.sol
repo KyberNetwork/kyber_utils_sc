@@ -5,16 +5,17 @@ import "./PermissionGroupsNoModifiers.sol";
 
 
 contract WithdrawableNoModifiers is PermissionGroupsNoModifiers {
-    constructor(address _admin) public PermissionGroupsNoModifiers(_admin) {}
 
     event EtherWithdraw(uint256 amount, address sendTo);
     event TokenWithdraw(IERC20 token, uint256 amount, address sendTo);
+
+    constructor(address _admin) public PermissionGroupsNoModifiers(_admin) {}
 
     /// @dev Withdraw Ethers
     function withdrawEther(uint256 amount, address payable sendTo) external {
         onlyAdmin();
         (bool success, ) = sendTo.call{value: amount}("");
-        require(success);
+        require(success, "withdraw failed");
         emit EtherWithdraw(amount, sendTo);
     }
 

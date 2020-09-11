@@ -101,7 +101,7 @@ abstract contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address => uint256) balances;
+    mapping(address => uint256) public balances;
 
     /*
      * Fix for the ERC20 short address attack
@@ -141,7 +141,7 @@ contract BasicToken is ERC20Basic {
  * https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is BasicToken, ERC20 {
-    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => mapping(address => uint256)) public allowed;
 
     function transferFrom(
         address _from,
@@ -150,7 +150,8 @@ contract StandardToken is BasicToken, ERC20 {
     ) public override returns (bool) {
         uint256 _allowance = allowed[_from][msg.sender];
 
-        // Check is not needed because sub(_allowance, _value) will already revert if this condition is not met
+        // Check is not needed because sub(_allowance, _value) will
+        // already revert if this condition is not met
         require(_value <= _allowance, "transfer more then allowed");
 
         balances[_to] = balances[_to].add(_value);
@@ -189,7 +190,7 @@ contract Token is StandardToken {
     string public name = "Test";
     string public symbol = "TST";
     uint256 public decimals = 18;
-    uint256 public INITIAL_SUPPLY = 10**(50 + 18);
+    uint256 public initialSupply = 10**(50 + 18);
 
     event Burn(address indexed _burner, uint256 _value);
 
@@ -198,8 +199,8 @@ contract Token is StandardToken {
         string memory _symbol,
         uint256 _decimals
     ) public {
-        totalSupply = INITIAL_SUPPLY;
-        balances[msg.sender] = INITIAL_SUPPLY;
+        totalSupply = initialSupply;
+        balances[msg.sender] = initialSupply;
         name = _name;
         symbol = _symbol;
         decimals = _decimals;

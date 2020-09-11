@@ -4,11 +4,11 @@ import "./IERC20.sol";
 import "./PermissionGroups.sol";
 
 contract Withdrawable is PermissionGroups {
-    constructor(address _admin) public PermissionGroups(_admin) {}
 
     event TokenWithdraw(IERC20 token, uint256 amount, address sendTo);
-
     event EtherWithdraw(uint256 amount, address sendTo);
+
+    constructor(address _admin) public PermissionGroups(_admin) {}
 
     /**
      * @dev Withdraw all IERC20 compatible tokens
@@ -28,7 +28,7 @@ contract Withdrawable is PermissionGroups {
      */
     function withdrawEther(uint256 amount, address payable sendTo) external onlyAdmin {
         (bool success, ) = sendTo.call{value: amount}("");
-        require(success);
+        require(success, "withdraw failed");
         emit EtherWithdraw(amount, sendTo);
     }
 }
