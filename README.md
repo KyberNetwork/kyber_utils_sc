@@ -23,5 +23,5 @@ We use `yarn` as the package manager. You may use `npm` and `npx` instead, but c
 or
 - `./test.sh -f ./test/utils.js` (Test only utils.js)
 
-## Coverage with `buidler-coverage`
+## Running coverage
 - `yarn coverage` (Runs coverage for all applicable files)
