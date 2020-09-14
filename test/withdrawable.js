@@ -1,7 +1,7 @@
-const MockWithdrawable = artifacts.require('./MockWithdrawableNoModifiers.sol');
+const MockWithdrawable = artifacts.require('MockWithdrawable.sol');
 const TestToken = artifacts.require('Token.sol');
 
-const Helper = require('../helper.js');
+const Helper = require('./helper.js');
 const BN = web3.utils.BN;
 
 let token;
@@ -13,10 +13,10 @@ let tokenWithdrawAmt = new BN(60);
 let initialEtherBalance = new BN(10);
 let etherWithdrawAmt = new BN(3);
 
-const {zeroBN} = require('../helper.js');
-const {expectRevert, expectEvent} = require('@openzeppelin/test-helpers');
+const {zeroBN} = require('./helper.js');
+const {expectRevert} = require('@openzeppelin/test-helpers');
 
-contract('WithdrawableNoModifiers', function (accounts) {
+contract('Withdrawable', function (accounts) {
   before('should init globals, deploy test token', async function () {
     user = accounts[0];
     admin = accounts[1];
@@ -37,12 +37,7 @@ contract('WithdrawableNoModifiers', function (accounts) {
       Helper.assertEqual(admin, rxAdmin, 'wrong admin ' + rxAdmin.toString());
 
       // withdraw the tokens from withdrawableInst
-      let txResult = await withdrawableInst.withdrawToken(token.address, tokenWithdrawAmt, user, {from: admin});
-      expectEvent(txResult, 'TokenWithdraw', {
-        token: token.address,
-        amount: tokenWithdrawAmt,
-        sendTo: user,
-      });
+      await withdrawableInst.withdrawToken(token.address, tokenWithdrawAmt, user, {from: admin});
 
       balance = await token.balanceOf(withdrawableInst.address);
       Helper.assertEqual(
@@ -84,11 +79,8 @@ contract('WithdrawableNoModifiers', function (accounts) {
 
     it('should test withdraw ether success for admin.', async function () {
       // withdraw the ether from withdrawableInst
-      let txResult = await withdrawableInst.withdrawEther(etherWithdrawAmt, user, {from: admin});
-      expectEvent(txResult, 'EtherWithdraw', {
-        amount: etherWithdrawAmt,
-        sendTo: user,
-      });
+      await withdrawableInst.withdrawEther(etherWithdrawAmt, user, {from: admin});
+
       let balance = await Helper.getBalancePromise(withdrawableInst.address);
       Helper.assertEqual(
         balance,

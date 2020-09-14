@@ -1,34 +1,34 @@
-const MockUtils4 = artifacts.require('MockUtils4.sol');
-const Helper = require('../helper.js');
+const MockUtils = artifacts.require('MockUtils.sol');
+const Helper = require('./helper.js');
 const TestToken = artifacts.require('Token.sol');
-const TokenNoDecimal = artifacts.require('TokenNoDecimal.sol');
+const TokenNoDecimals = artifacts.require('TokenNoDecimals.sol');
 const {expectRevert} = require('@openzeppelin/test-helpers');
 const BN = web3.utils.BN;
-const {BPS, precisionUnits, ethDecimals, ethAddress, MAX_QTY, MAX_RATE} = require('../helper.js');
+const {BPS, precisionUnits, ethDecimals, ethAddress, MAX_QTY, MAX_RATE} = require('./helper.js');
 
 const MAX_DECIMALS = 18;
 const MAX_DECIMAL_DIFF = 18;
 
-contract('utils4', function (accounts) {
+contract('Utils', function (accounts) {
   before('should init global', async function () {
-    utils4 = await MockUtils4.new();
+    utils = await MockUtils.new();
   });
 
   it('check constant variable', async function () {
-    Helper.assertEqual(await utils4.mockGetPrecision(), precisionUnits, 'precision is not correct');
-    Helper.assertEqual(await utils4.mockGetMaxRate(), MAX_RATE, 'maxrate is not correct');
-    Helper.assertEqual(await utils4.mockGetMaxQty(), MAX_QTY, 'max qty is not correct');
-    Helper.assertEqual(await utils4.mockGetMaxDecimals(), MAX_DECIMALS, 'max decimals is not correct');
-    Helper.assertEqual(await utils4.mockGetEthDecimals(), ethDecimals, 'eth decimal is not correct');
-    Helper.assertEqual(await utils4.mockGetBPS(), BPS, 'bps is not correct');
-    Helper.assertEqual(await utils4.mockGetEthTokenAddress(), ethAddress, 'eth address is not correct');
+    Helper.assertEqual(await utils.mockGetPrecision(), precisionUnits, 'precision is not correct');
+    Helper.assertEqual(await utils.mockGetMaxRate(), MAX_RATE, 'maxrate is not correct');
+    Helper.assertEqual(await utils.mockGetMaxQty(), MAX_QTY, 'max qty is not correct');
+    Helper.assertEqual(await utils.mockGetMaxDecimals(), MAX_DECIMALS, 'max decimals is not correct');
+    Helper.assertEqual(await utils.mockGetEthDecimals(), ethDecimals, 'eth decimal is not correct');
+    Helper.assertEqual(await utils.mockGetBPS(), BPS, 'bps is not correct');
+    Helper.assertEqual(await utils.mockGetEthTokenAddress(), ethAddress, 'eth address is not correct');
   });
 
   describe('test get balance', async function () {
     it('test get eth balance', async function () {
       user = accounts[9];
       let balanceEth = await Helper.getBalancePromise(user);
-      balance = await utils4.mockGetBalance(ethAddress, user);
+      balance = await utils.mockGetBalance(ethAddress, user);
       Helper.assertEqual(balance, balanceEth);
     });
 
@@ -39,46 +39,47 @@ contract('utils4', function (accounts) {
 
       await token.transfer(user, tokenBalance);
 
-      let balance = await utils4.mockGetBalance(token.address, user);
+      let balance = await utils.mockGetBalance(token.address, user);
       Helper.assertEqual(balance, tokenBalance);
     });
   });
 
   describe('test get decimals', async function () {
     it('should check get decimals for eth', async function () {
-      Helper.assertEqual(await utils4.mockGetDecimals(ethAddress), ethDecimals);
-      await utils4.mockSetDecimals(ethAddress);
-      Helper.assertEqual(await utils4.mockGetDecimals(ethAddress), ethDecimals);
-      Helper.assertEqual(await utils4.mockCheckGetUpdateDecimals.call(ethAddress), ethDecimals);
+      Helper.assertEqual(await utils.mockGetDecimals(ethAddress), ethDecimals);
+      await utils.mockSetDecimals(ethAddress);
+      Helper.assertEqual(await utils.mockGetDecimals(ethAddress), ethDecimals);
+      Helper.assertEqual(await utils.mockCheckGetUpdateDecimals.call(ethAddress), ethDecimals);
     });
 
     it('should check get decimals for normal token', async function () {
       let token = await TestToken.new('regular', 'reg', 16);
-      Helper.assertEqual(await utils4.mockGetDecimals(token.address), 16);
-      Helper.assertEqual(await utils4.mockGetDecimalsMap(token.address), 0);
-      await utils4.mockSetDecimals(token.address);
-      Helper.assertEqual(await utils4.mockGetDecimalsMap.call(token.address), 16);
-      Helper.assertEqual(await utils4.mockGetDecimals(token.address), 16);
+      Helper.assertEqual(await utils.mockGetDecimals(token.address), 16);
+      Helper.assertEqual(await utils.mockGetDecimalsMap(token.address), 0);
+      await utils.mockSetDecimals(token.address);
+      await utils.mockSetDecimals(token.address); // should just return even when executed again
+      Helper.assertEqual(await utils.mockGetDecimalsMap.call(token.address), 16);
+      Helper.assertEqual(await utils.mockGetDecimals(token.address), 16);
     });
 
     it('should check get update decimals for normal token', async function () {
       let token = await TestToken.new('regular', 'reg', 16);
-      Helper.assertEqual(await utils4.mockCheckGetUpdateDecimals.call(token.address), 16);
+      Helper.assertEqual(await utils.mockCheckGetUpdateDecimals.call(token.address), 16);
       // check gas consumtion and memory change
-      Helper.assertEqual(await utils4.mockGetDecimalsMap(token.address), 0);
-      let tx1 = await utils4.mockCheckGetUpdateDecimals(token.address);
-      Helper.assertEqual(await utils4.mockGetDecimalsMap.call(token.address), 16);
-      let tx2 = await utils4.mockCheckGetUpdateDecimals(token.address);
+      Helper.assertEqual(await utils.mockGetDecimalsMap(token.address), 0);
+      let tx1 = await utils.mockCheckGetUpdateDecimals(token.address);
+      Helper.assertEqual(await utils.mockGetDecimalsMap.call(token.address), 16);
+      let tx2 = await utils.mockCheckGetUpdateDecimals(token.address);
       Helper.assertGreater(tx1.receipt.gasUsed, tx2.receipt.gasUsed);
     });
 
     it('should check get decimals for token without decimals API. see reverts', async function () {
-      let tokenNoDecimal = await TokenNoDecimal.new('noDec', 'dec', 18);
+      let tokenNoDecimals = await TokenNoDecimals.new('noDec', 'dec', 18);
 
-      //now get deicmals to see values
-      await expectRevert.unspecified(utils4.mockSetDecimals(tokenNoDecimal.address));
-      await expectRevert.unspecified(utils4.mockGetDecimals(tokenNoDecimal.address));
-      await expectRevert.unspecified(utils4.mockCheckGetUpdateDecimals(tokenNoDecimal.address));
+      // now get deicmals to see values
+      await expectRevert.unspecified(utils.mockSetDecimals(tokenNoDecimals.address));
+      await expectRevert.unspecified(utils.mockGetDecimals(tokenNoDecimals.address));
+      await expectRevert.unspecified(utils.mockCheckGetUpdateDecimals(tokenNoDecimals.address));
     });
   });
 
@@ -98,11 +99,11 @@ contract('utils4', function (accounts) {
       let dstAddress = token2.address;
 
       let expectedDestQty = Helper.calcDstQty(srcQty, srcDecimal, dstDecimal, rate);
-      let reportedDstQty = await utils4.mockCalcDstQty(srcQty, srcDecimal, dstDecimal, rate);
+      let reportedDstQty = await utils.mockCalcDstQty(srcQty, srcDecimal, dstDecimal, rate);
       Helper.assertEqual(expectedDestQty, reportedDstQty, 'unexpected dst qty');
       Helper.assertEqual(
         expectedDestQty,
-        await utils4.mockCalcDestAmount(srcAddress, dstAddress, srcQty, rate),
+        await utils.mockCalcDestAmount(srcAddress, dstAddress, srcQty, rate),
         'unexpected destamount'
       );
     });
@@ -117,11 +118,11 @@ contract('utils4', function (accounts) {
       let dstAddress = token1.address;
 
       expectedDestQty = Helper.calcDstQty(srcQty, srcDecimal, dstDecimal, rate);
-      reportedDstQty = await utils4.mockCalcDstQty(srcQty, srcDecimal, dstDecimal, rate);
+      reportedDstQty = await utils.mockCalcDstQty(srcQty, srcDecimal, dstDecimal, rate);
       Helper.assertEqual(expectedDestQty, reportedDstQty, 'unexpected dst qty');
       Helper.assertEqual(
         expectedDestQty,
-        await utils4.mockCalcDestAmount(srcAddress, dstAddress, srcQty, rate),
+        await utils.mockCalcDestAmount(srcAddress, dstAddress, srcQty, rate),
         'unexpected destamount'
       );
     });
@@ -131,7 +132,7 @@ contract('utils4', function (accounts) {
       let dstDecimal = 20;
       let rate = MAX_RATE;
       let srcQty = MAX_QTY.add(new BN(1));
-      await expectRevert(utils4.mockCalcDstQty(srcQty, srcDecimal, dstDecimal, rate), 'srcQty > MAX_QTY');
+      await expectRevert(utils.mockCalcDstQty(srcQty, srcDecimal, dstDecimal, rate), 'srcQty > MAX_QTY');
     });
 
     it('check dest qty calculation revert for > MAX_RATE.', async function () {
@@ -139,7 +140,7 @@ contract('utils4', function (accounts) {
       let dstDecimal = 20;
       let rate = MAX_RATE.add(new BN(1));
       let srcQty = MAX_QTY;
-      await expectRevert(utils4.mockCalcDstQty(srcQty, srcDecimal, dstDecimal, rate), 'rate > MAX_RATE');
+      await expectRevert(utils.mockCalcDstQty(srcQty, srcDecimal, dstDecimal, rate), 'rate > MAX_RATE');
     });
   });
 
@@ -159,11 +160,11 @@ contract('utils4', function (accounts) {
       let dstAddress = token2.address;
 
       let expectedSrcQty = Helper.calcSrcQty(dstQty, srcDecimal, dstDecimal, rate);
-      let reportedDstQty = await utils4.mockCalcSrcQty(dstQty, srcDecimal, dstDecimal, rate);
+      let reportedDstQty = await utils.mockCalcSrcQty(dstQty, srcDecimal, dstDecimal, rate);
       Helper.assertEqual(expectedSrcQty, reportedDstQty, 'unexpected dst qty');
       Helper.assertEqual(
         expectedSrcQty,
-        await utils4.mockCalcSrcAmount(srcAddress, dstAddress, dstQty, rate),
+        await utils.mockCalcSrcAmount(srcAddress, dstAddress, dstQty, rate),
         'unexpected srcAmount'
       );
     });
@@ -178,11 +179,11 @@ contract('utils4', function (accounts) {
       let dstAddress = token1.address;
 
       expectedSrcQty = Helper.calcSrcQty(dstQty, srcDecimal, dstDecimal, rate);
-      reportedDstQty = await utils4.mockCalcSrcQty(dstQty, srcDecimal, dstDecimal, rate);
+      reportedDstQty = await utils.mockCalcSrcQty(dstQty, srcDecimal, dstDecimal, rate);
       Helper.assertEqual(expectedSrcQty, reportedDstQty, 'unexpected dst qty');
       Helper.assertEqual(
         expectedSrcQty,
-        await utils4.mockCalcSrcAmount(srcAddress, dstAddress, dstQty, rate),
+        await utils.mockCalcSrcAmount(srcAddress, dstAddress, dstQty, rate),
         'unexpected srcAmount'
       );
     });
@@ -192,7 +193,7 @@ contract('utils4', function (accounts) {
       let dstDecimal = await token2.decimals();
       let dstQty = MAX_QTY.div(new BN(2));
       let rate = MAX_RATE.add(new BN(1));
-      await expectRevert(utils4.mockCalcSrcQty(dstQty, srcDecimal, dstDecimal, rate), 'rate > MAX_RATE');
+      await expectRevert(utils.mockCalcSrcQty(dstQty, srcDecimal, dstDecimal, rate), 'rate > MAX_RATE');
     });
     it('check src qty calculation revert for > MAX_QTY.', async function () {
       let srcDecimal = await token1.decimals();
@@ -200,7 +201,7 @@ contract('utils4', function (accounts) {
       let dstQty = MAX_QTY.add(new BN(1));
       let rate = MAX_RATE;
 
-      await expectRevert(utils4.mockCalcSrcQty(dstQty, srcDecimal, dstDecimal, rate), 'dstQty > MAX_QTY');
+      await expectRevert(utils.mockCalcSrcQty(dstQty, srcDecimal, dstDecimal, rate), 'dstQty > MAX_QTY');
     });
   });
 
@@ -211,18 +212,18 @@ contract('utils4', function (accounts) {
     });
 
     it('cal dst qty dst - src > MAX_DECIMALS', async function () {
-      await expectRevert(utils4.mockCalcDstQty(30, smallDecimal, bigDecimal, 1500), 'dst - src > MAX_DECIMALS');
+      await expectRevert(utils.mockCalcDstQty(30, smallDecimal, bigDecimal, 1500), 'dst - src > MAX_DECIMALS');
     });
 
     it('cal dst qty src - dst > MAX_DECIMALS', async function () {
-      await expectRevert(utils4.mockCalcDstQty(30, bigDecimal, smallDecimal, 1500), 'src - dst > MAX_DECIMALS');
+      await expectRevert(utils.mockCalcDstQty(30, bigDecimal, smallDecimal, 1500), 'src - dst > MAX_DECIMALS');
     });
 
     it('cal src qty dst - src > MAX_DECIMALS', async function () {
-      await expectRevert(utils4.mockCalcSrcQty(30, smallDecimal, bigDecimal, 1500), 'dst - src > MAX_DECIMALS');
+      await expectRevert(utils.mockCalcSrcQty(30, smallDecimal, bigDecimal, 1500), 'dst - src > MAX_DECIMALS');
     });
     it('cal src qty src - dst > MAX_DECIMALS', async function () {
-      await expectRevert(utils4.mockCalcSrcQty(30, bigDecimal, smallDecimal, 1500), 'src - dst > MAX_DECIMALS');
+      await expectRevert(utils.mockCalcSrcQty(30, bigDecimal, smallDecimal, 1500), 'src - dst > MAX_DECIMALS');
     });
   });
 
@@ -234,7 +235,7 @@ contract('utils4', function (accounts) {
       let destQty = 11531;
 
       let expectedRate = Helper.calcRateFromQty(srcQty, destQty, srcDecimal, destDecimal);
-      let rxRate = await utils4.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal);
+      let rxRate = await utils.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal);
 
       Helper.assertEqual(rxRate, expectedRate);
     });
@@ -246,7 +247,7 @@ contract('utils4', function (accounts) {
       let destQty = 11531;
 
       let expectedRate = Helper.calcRateFromQty(srcQty, destQty, srcDecimal, destDecimal);
-      let rxRate = await utils4.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal);
+      let rxRate = await utils.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal);
 
       Helper.assertEqual(rxRate, expectedRate);
     });
@@ -258,7 +259,7 @@ contract('utils4', function (accounts) {
       let destQty = 11531;
 
       let expectedRate = Helper.calcRateFromQty(srcQty, destQty, srcDecimal, destDecimal);
-      let rxRate = await utils4.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal);
+      let rxRate = await utils.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal);
 
       Helper.assertEqual(rxRate, expectedRate);
     });
@@ -269,7 +270,7 @@ contract('utils4', function (accounts) {
       let srcQty = MAX_QTY.add(new BN(1));
       let destQty = 11531;
 
-      await expectRevert(utils4.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal), 'srcAmount > MAX_QTY');
+      await expectRevert(utils.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal), 'srcAmount > MAX_QTY');
     });
 
     it('test calc functionality with high dest quantity.', async function () {
@@ -279,7 +280,7 @@ contract('utils4', function (accounts) {
       let destQty = MAX_QTY;
 
       let expectedRate = Helper.calcRateFromQty(srcQty, destQty, srcDecimal, destDecimal);
-      let rxRate = await utils4.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal);
+      let rxRate = await utils.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal);
 
       Helper.assertEqual(rxRate, expectedRate);
     });
@@ -290,7 +291,7 @@ contract('utils4', function (accounts) {
       let srcQty = 1;
       let destQty = MAX_QTY.add(new BN(1));
 
-      await expectRevert(utils4.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal), 'destAmount > MAX_QTY');
+      await expectRevert(utils.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal), 'destAmount > MAX_QTY');
     });
 
     it('test calc functionality with high decimal diff destDecimal > srcDecimal.', async function () {
@@ -300,7 +301,7 @@ contract('utils4', function (accounts) {
       let destQty = 9853;
 
       let expectedRate = Helper.calcRateFromQty(srcQty, destQty, srcDecimal, destDecimal);
-      let rxRate = await utils4.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal);
+      let rxRate = await utils.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal);
 
       Helper.assertEqual(rxRate, expectedRate);
     });
@@ -312,7 +313,7 @@ contract('utils4', function (accounts) {
       let destQty = 9853;
 
       await expectRevert(
-        utils4.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal),
+        utils.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal),
         'dst - src > MAX_DECIMALS'
       );
     });
@@ -325,7 +326,7 @@ contract('utils4', function (accounts) {
 
       //should work with max decimal diff.
       let expectedRate = Helper.calcRateFromQty(srcQty, destQty, srcDecimal, destDecimal);
-      let rxRate = await utils4.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal);
+      let rxRate = await utils.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal);
       Helper.assertEqual(rxRate, expectedRate);
     });
 
@@ -335,14 +336,14 @@ contract('utils4', function (accounts) {
       let srcQty = 795;
       let destQty = 9853;
       await expectRevert(
-        utils4.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal),
+        utils.mockCalcRateFromQty(srcQty, destQty, srcDecimal, destDecimal),
         'src - dst > MAX_DECIMALS'
       );
     });
   });
 
   it('test min of', async function () {
-    Helper.assertEqual(3, await utils4.mockMinOf(3, 10));
-    Helper.assertEqual(3, await utils4.mockMinOf(10, 3));
+    Helper.assertEqual(3, await utils.mockMinOf(3, 10));
+    Helper.assertEqual(3, await utils.mockMinOf(10, 3));
   });
 });

@@ -1,10 +1,10 @@
 pragma solidity 0.6.6;
 
-import "../Utils5.sol";
+import "../Utils.sol";
 
 
 /// @title Kyber utils contract
-contract MockUtils5 is Utils5 {
+contract MockUtils is Utils {
     function mockCheckGetUpdateDecimals(IERC20 token) public returns (uint256) {
         return getUpdateDecimals(token);
     }

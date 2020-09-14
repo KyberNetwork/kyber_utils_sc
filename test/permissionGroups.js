@@ -1,9 +1,9 @@
-let MockPermission = artifacts.require('./MockPermissionGroups3.sol');
-let Permission = artifacts.require('./PermissionGroups3.sol');
-let Helper = require('../helper.js');
+let MockPermission = artifacts.require('./MockPermissionGroups.sol');
+let Permission = artifacts.require('./PermissionGroups.sol');
+let Helper = require('./helper.js');
 
 const BN = web3.utils.BN;
-const {zeroAddress, zeroBN} = require('../helper.js');
+const {zeroAddress, zeroBN} = require('./helper.js');
 const {expectEvent, expectRevert} = require('@openzeppelin/test-helpers');
 const MAX_GROUP_SIZE = 50;
 
@@ -15,7 +15,7 @@ let operator;
 let alerter;
 let user;
 
-contract('PermissionGroups3', function (accounts) {
+contract('PermissionGroups', function (accounts) {
   before('init global accounts', async () => {
     // global inits in first test
     user = accounts[0];

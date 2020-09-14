@@ -1,14 +1,14 @@
 pragma solidity 0.6.6;
 
 import "./IERC20.sol";
-import "./PermissionGroups3.sol";
+import "./PermissionGroups.sol";
 
-contract Withdrawable3 is PermissionGroups3 {
-    constructor(address _admin) public PermissionGroups3(_admin) {}
+contract Withdrawable is PermissionGroups {
 
     event TokenWithdraw(IERC20 token, uint256 amount, address sendTo);
-
     event EtherWithdraw(uint256 amount, address sendTo);
+
+    constructor(address _admin) public PermissionGroups(_admin) {}
 
     /**
      * @dev Withdraw all IERC20 compatible tokens
@@ -28,7 +28,7 @@ contract Withdrawable3 is PermissionGroups3 {
      */
     function withdrawEther(uint256 amount, address payable sendTo) external onlyAdmin {
         (bool success, ) = sendTo.call{value: amount}("");
-        require(success);
+        require(success, "withdraw failed");
         emit EtherWithdraw(amount, sendTo);
     }
 }

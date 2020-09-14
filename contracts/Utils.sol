@@ -1,4 +1,4 @@
-pragma solidity 0.5.11;
+pragma solidity 0.6.6;
 
 import "./IERC20.sol";
 
@@ -7,41 +7,42 @@ import "./IERC20.sol";
  * @title Kyber utility file
  * mostly shared constants and rate calculation helpers
  * inherited by most of kyber contracts.
- * previous utils implementations are for previous solidity version.
+ * previous utils implementations are for previous solidity versions.
  */
-contract Utils4 {
+contract Utils {
     IERC20 internal constant ETH_TOKEN_ADDRESS = IERC20(
         0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
     );
+    uint256 public constant BPS = 10000; // Basic Price Steps. 1 step = 0.01%
     uint256 internal constant PRECISION = (10**18);
     uint256 internal constant MAX_QTY = (10**28); // 10B tokens
-    uint256 internal constant MAX_RATE = (PRECISION * 10**7); // up to 10M tokens per ETH
+    uint256 internal constant MAX_RATE = (PRECISION * 10**7); // up to 10M tokens per eth
     uint256 internal constant MAX_DECIMALS = 18;
     uint256 internal constant ETH_DECIMALS = 18;
-    uint256 constant BPS = 10000; // Basic Price Steps. 1 step = 0.01%
+    uint256 internal constant MAX_ALLOWANCE = uint256(-1); // token.approve inifinite
 
-    mapping(address => uint256) internal decimals;
+    mapping(IERC20 => uint256) internal decimals;
 
     function getUpdateDecimals(IERC20 token) internal returns (uint256) {
         if (token == ETH_TOKEN_ADDRESS) return ETH_DECIMALS; // save storage access
-        uint256 tokenDecimals = decimals[address(token)];
+        uint256 tokenDecimals = decimals[token];
         // moreover, very possible that old tokens have decimals 0
         // these tokens will just have higher gas fees.
         if (tokenDecimals == 0) {
             tokenDecimals = token.decimals();
-            decimals[address(token)] = token.decimals();
+            decimals[token] = tokenDecimals;
         }
 
         return tokenDecimals;
     }
 
     function setDecimals(IERC20 token) internal {
-        if (decimals[address(token)] != 0) return; //already set
+        if (decimals[token] != 0) return; //already set
 
         if (token == ETH_TOKEN_ADDRESS) {
-            decimals[address(token)] = ETH_DECIMALS;
+            decimals[token] = ETH_DECIMALS;
         } else {
-            decimals[address(token)] = token.decimals();
+            decimals[token] = token.decimals();
         }
     }
 
@@ -58,7 +59,7 @@ contract Utils4 {
 
     function getDecimals(IERC20 token) internal view returns (uint256) {
         if (token == ETH_TOKEN_ADDRESS) return ETH_DECIMALS; // save storage access
-        uint256 tokenDecimals = decimals[address(token)];
+        uint256 tokenDecimals = decimals[token];
         // moreover, very possible that old tokens have decimals 0
         // these tokens will just have higher gas fees.
         if (tokenDecimals == 0) return token.decimals();
