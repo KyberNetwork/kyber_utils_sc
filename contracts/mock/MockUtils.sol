@@ -5,12 +5,8 @@ import "../Utils.sol";
 
 /// @title Kyber utils contract
 contract MockUtils is Utils {
-    function mockCheckGetUpdateDecimals(IERC20 token) public returns (uint256) {
-        return getUpdateDecimals(token);
-    }
-
-    function mockSetDecimals(IERC20 token) public {
-        return setDecimals(token);
+    function mockUpdateDecimals(IERC20 token) public returns (uint256) {
+        return updateDecimals(token);
     }
 
     function mockCalcDestAmount(

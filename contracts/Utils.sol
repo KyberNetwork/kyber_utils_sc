@@ -13,6 +13,21 @@ contract Utils {
     IERC20 internal constant ETH_TOKEN_ADDRESS = IERC20(
         0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
     );
+    IERC20 internal constant USDT_TOKEN_ADDRESS = IERC20(
+        0xdAC17F958D2ee523a2206206994597C13D831ec7
+    );
+    IERC20 internal constant DAI_TOKEN_ADDRESS = IERC20(
+        0x6B175474E89094C44Da98b954EedeAC495271d0F
+    );
+    IERC20 internal constant USDC_TOKEN_ADDRESS = IERC20(
+        0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
+    );
+    IERC20 internal constant WBTC_TOKEN_ADDRESS = IERC20(
+        0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599
+    );
+    IERC20 internal constant KNC_TOKEN_ADDRESS = IERC20(
+        0xdd974D5C2e2928deA5F71b9825b8b646686BD200
+    );
     uint256 public constant BPS = 10000; // Basic Price Steps. 1 step = 0.01%
     uint256 internal constant PRECISION = (10**18);
     uint256 internal constant MAX_QTY = (10**28); // 10B tokens
@@ -23,9 +38,13 @@ contract Utils {
 
     mapping(IERC20 => uint256) internal decimals;
 
-    function getUpdateDecimals(IERC20 token) internal returns (uint256) {
-        if (token == ETH_TOKEN_ADDRESS) return ETH_DECIMALS; // save storage access
-        uint256 tokenDecimals = decimals[token];
+    function updateDecimals(IERC20 token) internal returns (uint256) {
+        // return token decimals if handled by token switch
+        uint256 tokenDecimals = tokenSwitch(token);
+        if (tokenDecimals > 0) return tokenDecimals;
+
+        // handle case where token decimals is not a declared constant
+        tokenDecimals = decimals[token];
         // moreover, very possible that old tokens have decimals 0
         // these tokens will just have higher gas fees.
         if (tokenDecimals == 0) {
@@ -36,13 +55,24 @@ contract Utils {
         return tokenDecimals;
     }
 
-    function setDecimals(IERC20 token) internal {
-        if (decimals[token] != 0) return; //already set
-
+    /// @dev save storage access by declaring token decimal constants
+    /// @param token The token type
+    /// @return token decimals
+    function tokenSwitch(IERC20 token) internal pure returns (uint256) {
         if (token == ETH_TOKEN_ADDRESS) {
-            decimals[token] = ETH_DECIMALS;
+            return ETH_DECIMALS;
+        } else if (token == USDT_TOKEN_ADDRESS) {
+            return 6;
+        } else if (token == DAI_TOKEN_ADDRESS) {
+            return 18;
+        } else if (token == USDC_TOKEN_ADDRESS) {
+            return 6;
+        } else if (token == WBTC_TOKEN_ADDRESS) {
+            return 8;
+        } else if (token == KNC_TOKEN_ADDRESS) {
+            return 18;
         } else {
-            decimals[token] = token.decimals();
+            return 0;
         }
     }
 
@@ -58,11 +88,17 @@ contract Utils {
     }
 
     function getDecimals(IERC20 token) internal view returns (uint256) {
-        if (token == ETH_TOKEN_ADDRESS) return ETH_DECIMALS; // save storage access
-        uint256 tokenDecimals = decimals[token];
+        // return token decimals if handled by token switch
+        uint256 tokenDecimals = tokenSwitch(token);
+        if (tokenDecimals > 0) return tokenDecimals;
+
+        // handle case where token decimals is not a declared constant
+        tokenDecimals = decimals[token];
         // moreover, very possible that old tokens have decimals 0
         // these tokens will just have higher gas fees.
-        if (tokenDecimals == 0) return token.decimals();
+        if (tokenDecimals == 0) {
+            tokenDecimals = token.decimals();
+        }
 
         return tokenDecimals;
     }
