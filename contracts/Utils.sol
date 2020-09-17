@@ -38,27 +38,22 @@ contract Utils {
 
     mapping(IERC20 => uint256) internal decimals;
 
-    function updateDecimals(IERC20 token) internal returns (uint256) {
-        // return token decimals if handled by token switch
-        uint256 tokenDecimals = tokenSwitch(token);
-        if (tokenDecimals > 0) return tokenDecimals;
-
-        // handle case where token decimals is not a declared constant
-        tokenDecimals = decimals[token];
-        // moreover, very possible that old tokens have decimals 0
-        // these tokens will just have higher gas fees.
-        if (tokenDecimals == 0) {
-            tokenDecimals = token.decimals();
-            decimals[token] = tokenDecimals;
-        }
-
-        return tokenDecimals;
+    function updateDecimals(IERC20 token) internal returns (uint256 tokenDecimals) {
+        tokenDecimals = getDecimals(token);
+        if (
+            token != ETH_TOKEN_ADDRESS ||
+            token != USDT_TOKEN_ADDRESS ||
+            token != DAI_TOKEN_ADDRESS ||
+            token != USDC_TOKEN_ADDRESS ||
+            token != WBTC_TOKEN_ADDRESS ||
+            token != KNC_TOKEN_ADDRESS
+        ) decimals[token] = tokenDecimals;
     }
 
     /// @dev save storage access by declaring token decimal constants
     /// @param token The token type
     /// @return token decimals
-    function tokenSwitch(IERC20 token) internal pure returns (uint256) {
+    function getDecimalsConstant(IERC20 token) internal pure returns (uint256) {
         if (token == ETH_TOKEN_ADDRESS) {
             return ETH_DECIMALS;
         } else if (token == USDT_TOKEN_ADDRESS) {
@@ -87,20 +82,16 @@ contract Utils {
         }
     }
 
-    function getDecimals(IERC20 token) internal view returns (uint256) {
+    function getDecimals(IERC20 token) internal view returns (uint256 tokenDecimals) {
         // return token decimals if handled by token switch
-        uint256 tokenDecimals = tokenSwitch(token);
+        tokenDecimals = getDecimalsConstant(token);
         if (tokenDecimals > 0) return tokenDecimals;
 
         // handle case where token decimals is not a declared constant
         tokenDecimals = decimals[token];
         // moreover, very possible that old tokens have decimals 0
         // these tokens will just have higher gas fees.
-        if (tokenDecimals == 0) {
-            tokenDecimals = token.decimals();
-        }
-
-        return tokenDecimals;
+        return (tokenDecimals > 0) ? tokenDecimals : token.decimals();
     }
 
     function calcDestAmount(
