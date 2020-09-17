@@ -38,16 +38,9 @@ contract Utils {
 
     mapping(IERC20 => uint256) internal decimals;
 
-    function updateDecimals(IERC20 token) internal returns (uint256 tokenDecimals) {
+    function getSetDecimals(IERC20 token) internal returns (uint256 tokenDecimals) {
         tokenDecimals = getDecimals(token);
-        if (
-            token != ETH_TOKEN_ADDRESS ||
-            token != USDT_TOKEN_ADDRESS ||
-            token != DAI_TOKEN_ADDRESS ||
-            token != USDC_TOKEN_ADDRESS ||
-            token != WBTC_TOKEN_ADDRESS ||
-            token != KNC_TOKEN_ADDRESS
-        ) decimals[token] = tokenDecimals;
+        if (getDecimalsConstant(token) == 0) decimals[token] = tokenDecimals;
     }
 
     /// @dev save storage access by declaring token decimal constants
