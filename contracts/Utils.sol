@@ -40,7 +40,8 @@ contract Utils {
 
     function getSetDecimals(IERC20 token) internal returns (uint256 tokenDecimals) {
         tokenDecimals = getDecimals(token);
-        if (getDecimalsConstant(token) == 0) decimals[token] = tokenDecimals;
+        if (getDecimalsConstant(token) == 0 && decimals[token] == 0)
+            decimals[token] = tokenDecimals;
     }
 
     /// @dev save storage access by declaring token decimal constants
@@ -76,7 +77,7 @@ contract Utils {
     }
 
     function getDecimals(IERC20 token) internal view returns (uint256 tokenDecimals) {
-        // return token decimals if handled by token switch
+        // return token decimals if has constant value
         tokenDecimals = getDecimalsConstant(token);
         if (tokenDecimals > 0) return tokenDecimals;
 
