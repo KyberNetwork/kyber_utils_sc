@@ -39,29 +39,13 @@ contract Utils {
     mapping(IERC20 => uint256) internal decimals;
 
     function getSetDecimals(IERC20 token) internal returns (uint256 tokenDecimals) {
-        tokenDecimals = getDecimals(token);
-        if (getDecimalsConstant(token) == 0 && decimals[token] == 0)
-            decimals[token] = tokenDecimals;
-    }
+        tokenDecimals = getDecimalsConstant(token);
+        if (tokenDecimals > 0) return tokenDecimals;
 
-    /// @dev save storage access by declaring token decimal constants
-    /// @param token The token type
-    /// @return token decimals
-    function getDecimalsConstant(IERC20 token) internal pure returns (uint256) {
-        if (token == ETH_TOKEN_ADDRESS) {
-            return ETH_DECIMALS;
-        } else if (token == USDT_TOKEN_ADDRESS) {
-            return 6;
-        } else if (token == DAI_TOKEN_ADDRESS) {
-            return 18;
-        } else if (token == USDC_TOKEN_ADDRESS) {
-            return 6;
-        } else if (token == WBTC_TOKEN_ADDRESS) {
-            return 8;
-        } else if (token == KNC_TOKEN_ADDRESS) {
-            return 18;
-        } else {
-            return 0;
+        tokenDecimals = decimals[token];
+        if (tokenDecimals == 0) {
+            tokenDecimals = token.decimals();
+            decimals[token] = tokenDecimals;
         }
     }
 
@@ -81,7 +65,7 @@ contract Utils {
         tokenDecimals = getDecimalsConstant(token);
         if (tokenDecimals > 0) return tokenDecimals;
 
-        // handle case where token decimals is not a declared constant
+        // handle case where token decimals is not a declared decimal constant
         tokenDecimals = decimals[token];
         // moreover, very possible that old tokens have decimals 0
         // these tokens will just have higher gas fees.
@@ -163,6 +147,27 @@ contract Utils {
         } else {
             require((srcDecimals - dstDecimals) <= MAX_DECIMALS, "src - dst > MAX_DECIMALS");
             return ((destAmount * PRECISION * (10**(srcDecimals - dstDecimals))) / srcAmount);
+        }
+    }
+
+    /// @dev save storage access by declaring token decimal constants
+    /// @param token The token type
+    /// @return token decimals
+    function getDecimalsConstant(IERC20 token) internal pure returns (uint256) {
+        if (token == ETH_TOKEN_ADDRESS) {
+            return ETH_DECIMALS;
+        } else if (token == USDT_TOKEN_ADDRESS) {
+            return 6;
+        } else if (token == DAI_TOKEN_ADDRESS) {
+            return 18;
+        } else if (token == USDC_TOKEN_ADDRESS) {
+            return 6;
+        } else if (token == WBTC_TOKEN_ADDRESS) {
+            return 8;
+        } else if (token == KNC_TOKEN_ADDRESS) {
+            return 18;
+        } else {
+            return 0;
         }
     }
 
