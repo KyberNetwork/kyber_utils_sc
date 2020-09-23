@@ -10,6 +10,10 @@ import "./IERC20.sol";
  * previous utils implementations are for previous solidity versions.
  */
 contract Utils {
+    /// Declared constants below to be used in tandem with
+    /// getDecimalsConstant(), for gas optimization purposes
+    /// which return decimals from a constant list of popular
+    /// tokens.
     IERC20 internal constant ETH_TOKEN_ADDRESS = IERC20(
         0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
     );
@@ -38,6 +42,10 @@ contract Utils {
 
     mapping(IERC20 => uint256) internal decimals;
 
+    /// @dev Sets the decimals of a token to storage if not already set, and returns
+    ///      the decimals value of the token
+    /// @param token The token type
+    /// @return The decimals of the token
     function getSetDecimals(IERC20 token) internal returns (uint256 tokenDecimals) {
         tokenDecimals = getDecimalsConstant(token);
         if (tokenDecimals > 0) return tokenDecimals;
@@ -49,7 +57,7 @@ contract Utils {
         }
     }
 
-    /// @dev get the balance of a user.
+    /// @dev Get the balance of a user
     /// @param token The token type
     /// @return The balance
     function getBalance(IERC20 token, address user) internal view returns (uint256) {
@@ -60,6 +68,10 @@ contract Utils {
         }
     }
 
+    /// @dev Get the decimals of a token, read from the constant list, storage,
+    ///      or from token.decimals()
+    /// @param token The token type
+    /// @return The decimals of the token
     function getDecimals(IERC20 token) internal view returns (uint256 tokenDecimals) {
         // return token decimals if has constant value
         tokenDecimals = getDecimalsConstant(token);
