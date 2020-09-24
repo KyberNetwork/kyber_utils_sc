@@ -29,6 +29,7 @@ coverage.json
 build
 artifacts
 cache
+dist
 
 # Dependency directories
 node_modules
