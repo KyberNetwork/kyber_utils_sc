@@ -43,9 +43,10 @@ contract Utils {
     mapping(IERC20 => uint256) internal decimals;
 
     /// @dev Sets the decimals of a token to storage if not already set, and returns
-    ///      the decimals value of the token
+    ///      the decimals value of the token. Prefer using this function over
+    ///      getDecimals(), to avoid forgetting to set decimals in local storage.
     /// @param token The token type
-    /// @return The decimals of the token
+    /// @return tokenDecimals The decimals of the token
     function getSetDecimals(IERC20 token) internal returns (uint256 tokenDecimals) {
         tokenDecimals = getDecimalsConstant(token);
         if (tokenDecimals > 0) return tokenDecimals;
@@ -59,6 +60,7 @@ contract Utils {
 
     /// @dev Get the balance of a user
     /// @param token The token type
+    /// @param user The user's address
     /// @return The balance
     function getBalance(IERC20 token, address user) internal view returns (uint256) {
         if (token == ETH_TOKEN_ADDRESS) {
@@ -69,9 +71,9 @@ contract Utils {
     }
 
     /// @dev Get the decimals of a token, read from the constant list, storage,
-    ///      or from token.decimals()
+    ///      or from token.decimals(). Prefer using getSetDecimals when possible.
     /// @param token The token type
-    /// @return The decimals of the token
+    /// @return tokenDecimals The decimals of the token
     function getDecimals(IERC20 token) internal view returns (uint256 tokenDecimals) {
         // return token decimals if has constant value
         tokenDecimals = getDecimalsConstant(token);
