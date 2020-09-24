@@ -10,8 +10,27 @@ import "./IERC20.sol";
  * previous utils implementations are for previous solidity versions.
  */
 contract Utils {
+    /// Declared constants below to be used in tandem with
+    /// getDecimalsConstant(), for gas optimization purposes
+    /// which return decimals from a constant list of popular
+    /// tokens.
     IERC20 internal constant ETH_TOKEN_ADDRESS = IERC20(
         0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
+    );
+    IERC20 internal constant USDT_TOKEN_ADDRESS = IERC20(
+        0xdAC17F958D2ee523a2206206994597C13D831ec7
+    );
+    IERC20 internal constant DAI_TOKEN_ADDRESS = IERC20(
+        0x6B175474E89094C44Da98b954EedeAC495271d0F
+    );
+    IERC20 internal constant USDC_TOKEN_ADDRESS = IERC20(
+        0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
+    );
+    IERC20 internal constant WBTC_TOKEN_ADDRESS = IERC20(
+        0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599
+    );
+    IERC20 internal constant KNC_TOKEN_ADDRESS = IERC20(
+        0xdd974D5C2e2928deA5F71b9825b8b646686BD200
     );
     uint256 public constant BPS = 10000; // Basic Price Steps. 1 step = 0.01%
     uint256 internal constant PRECISION = (10**18);
@@ -23,31 +42,25 @@ contract Utils {
 
     mapping(IERC20 => uint256) internal decimals;
 
-    function getUpdateDecimals(IERC20 token) internal returns (uint256) {
-        if (token == ETH_TOKEN_ADDRESS) return ETH_DECIMALS; // save storage access
-        uint256 tokenDecimals = decimals[token];
-        // moreover, very possible that old tokens have decimals 0
-        // these tokens will just have higher gas fees.
+    /// @dev Sets the decimals of a token to storage if not already set, and returns
+    ///      the decimals value of the token. Prefer using this function over
+    ///      getDecimals(), to avoid forgetting to set decimals in local storage.
+    /// @param token The token type
+    /// @return tokenDecimals The decimals of the token
+    function getSetDecimals(IERC20 token) internal returns (uint256 tokenDecimals) {
+        tokenDecimals = getDecimalsConstant(token);
+        if (tokenDecimals > 0) return tokenDecimals;
+
+        tokenDecimals = decimals[token];
         if (tokenDecimals == 0) {
             tokenDecimals = token.decimals();
             decimals[token] = tokenDecimals;
         }
-
-        return tokenDecimals;
     }
 
-    function setDecimals(IERC20 token) internal {
-        if (decimals[token] != 0) return; //already set
-
-        if (token == ETH_TOKEN_ADDRESS) {
-            decimals[token] = ETH_DECIMALS;
-        } else {
-            decimals[token] = token.decimals();
-        }
-    }
-
-    /// @dev get the balance of a user.
+    /// @dev Get the balance of a user
     /// @param token The token type
+    /// @param user The user's address
     /// @return The balance
     function getBalance(IERC20 token, address user) internal view returns (uint256) {
         if (token == ETH_TOKEN_ADDRESS) {
@@ -57,14 +70,20 @@ contract Utils {
         }
     }
 
-    function getDecimals(IERC20 token) internal view returns (uint256) {
-        if (token == ETH_TOKEN_ADDRESS) return ETH_DECIMALS; // save storage access
-        uint256 tokenDecimals = decimals[token];
+    /// @dev Get the decimals of a token, read from the constant list, storage,
+    ///      or from token.decimals(). Prefer using getSetDecimals when possible.
+    /// @param token The token type
+    /// @return tokenDecimals The decimals of the token
+    function getDecimals(IERC20 token) internal view returns (uint256 tokenDecimals) {
+        // return token decimals if has constant value
+        tokenDecimals = getDecimalsConstant(token);
+        if (tokenDecimals > 0) return tokenDecimals;
+
+        // handle case where token decimals is not a declared decimal constant
+        tokenDecimals = decimals[token];
         // moreover, very possible that old tokens have decimals 0
         // these tokens will just have higher gas fees.
-        if (tokenDecimals == 0) return token.decimals();
-
-        return tokenDecimals;
+        return (tokenDecimals > 0) ? tokenDecimals : token.decimals();
     }
 
     function calcDestAmount(
@@ -142,6 +161,27 @@ contract Utils {
         } else {
             require((srcDecimals - dstDecimals) <= MAX_DECIMALS, "src - dst > MAX_DECIMALS");
             return ((destAmount * PRECISION * (10**(srcDecimals - dstDecimals))) / srcAmount);
+        }
+    }
+
+    /// @dev save storage access by declaring token decimal constants
+    /// @param token The token type
+    /// @return token decimals
+    function getDecimalsConstant(IERC20 token) internal pure returns (uint256) {
+        if (token == ETH_TOKEN_ADDRESS) {
+            return ETH_DECIMALS;
+        } else if (token == USDT_TOKEN_ADDRESS) {
+            return 6;
+        } else if (token == DAI_TOKEN_ADDRESS) {
+            return 18;
+        } else if (token == USDC_TOKEN_ADDRESS) {
+            return 6;
+        } else if (token == WBTC_TOKEN_ADDRESS) {
+            return 8;
+        } else if (token == KNC_TOKEN_ADDRESS) {
+            return 18;
+        } else {
+            return 0;
         }
     }
 

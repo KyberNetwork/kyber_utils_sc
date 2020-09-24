@@ -46,40 +46,55 @@ contract('Utils', function (accounts) {
 
   describe('test get decimals', async function () {
     it('should check get decimals for eth', async function () {
+      Helper.assertEqual(await utils.mockGetSetDecimals.call(ethAddress), ethDecimals);
       Helper.assertEqual(await utils.mockGetDecimals(ethAddress), ethDecimals);
-      await utils.mockSetDecimals(ethAddress);
-      Helper.assertEqual(await utils.mockGetDecimals(ethAddress), ethDecimals);
-      Helper.assertEqual(await utils.mockCheckGetUpdateDecimals.call(ethAddress), ethDecimals);
+    });
+
+    it('should check get decimals for constant tokens', async function () {
+      const usdtAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+      const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
+      const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+      const wbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
+      const kncAddress = '0xdd974D5C2e2928deA5F71b9825b8b646686BD200';
+
+      Helper.assertEqual(await utils.mockGetSetDecimals.call(usdtAddress), 6);
+      Helper.assertEqual(await utils.mockGetDecimals(usdtAddress), 6);
+      Helper.assertEqual(await utils.mockGetSetDecimals.call(daiAddress), 18);
+      Helper.assertEqual(await utils.mockGetDecimals(daiAddress), 18);
+      Helper.assertEqual(await utils.mockGetSetDecimals.call(usdcAddress), 6);
+      Helper.assertEqual(await utils.mockGetDecimals(usdcAddress), 6);
+      Helper.assertEqual(await utils.mockGetSetDecimals.call(wbtcAddress), 8);
+      Helper.assertEqual(await utils.mockGetDecimals(wbtcAddress), 8);
+      Helper.assertEqual(await utils.mockGetSetDecimals.call(kncAddress), 18);
+      Helper.assertEqual(await utils.mockGetDecimals(kncAddress), 18);
     });
 
     it('should check get decimals for normal token', async function () {
       let token = await TestToken.new('regular', 'reg', 16);
       Helper.assertEqual(await utils.mockGetDecimals(token.address), 16);
       Helper.assertEqual(await utils.mockGetDecimalsMap(token.address), 0);
-      await utils.mockSetDecimals(token.address);
-      await utils.mockSetDecimals(token.address); // should just return even when executed again
+      Helper.assertEqual(await utils.mockGetSetDecimals.call(token.address), 16);
+      await utils.mockGetSetDecimals(token.address);
       Helper.assertEqual(await utils.mockGetDecimalsMap.call(token.address), 16);
-      Helper.assertEqual(await utils.mockGetDecimals(token.address), 16);
     });
 
     it('should check get update decimals for normal token', async function () {
       let token = await TestToken.new('regular', 'reg', 16);
-      Helper.assertEqual(await utils.mockCheckGetUpdateDecimals.call(token.address), 16);
+      Helper.assertEqual(await utils.mockGetSetDecimals.call(token.address), 16);
       // check gas consumtion and memory change
       Helper.assertEqual(await utils.mockGetDecimalsMap(token.address), 0);
-      let tx1 = await utils.mockCheckGetUpdateDecimals(token.address);
+      let tx1 = await utils.mockGetSetDecimals(token.address);
       Helper.assertEqual(await utils.mockGetDecimalsMap.call(token.address), 16);
-      let tx2 = await utils.mockCheckGetUpdateDecimals(token.address);
+      let tx2 = await utils.mockGetSetDecimals(token.address);
       Helper.assertGreater(tx1.receipt.gasUsed, tx2.receipt.gasUsed);
     });
 
     it('should check get decimals for token without decimals API. see reverts', async function () {
       let tokenNoDecimals = await TokenNoDecimals.new('noDec', 'dec', 18);
 
-      // now get deicmals to see values
-      await expectRevert.unspecified(utils.mockSetDecimals(tokenNoDecimals.address));
+      // now get decimals to see values
+      await expectRevert.unspecified(utils.mockGetSetDecimals(tokenNoDecimals.address));
       await expectRevert.unspecified(utils.mockGetDecimals(tokenNoDecimals.address));
-      await expectRevert.unspecified(utils.mockCheckGetUpdateDecimals(tokenNoDecimals.address));
     });
   });
 
