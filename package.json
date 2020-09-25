@@ -1,6 +1,6 @@
 {
   "name": "@kyber.network/utils-sc",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "This repository has the utils contracts for the Kyber protocol.",
   "directories": {
     "test": "test"
