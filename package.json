@@ -1,10 +1,13 @@
 {
   "name": "@kyber.network/utils-sc",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "This repository has the utils contracts for the Kyber protocol.",
   "directories": {
     "test": "test"
   },
+  "files": [
+    "contracts/*.sol"
+  ],
   "scripts": {
     "test": "./test.sh",
     "t": "./test.sh",
@@ -12,9 +15,7 @@
     "c": "./compile.sh",
     "coverage": "./coverage.sh",
     "lint": "yarn solhint 'contracts/**/*.sol' && yarn prettier -c './**/*.js'",
-    "release:prepare": "mkdir -p dist && cp contracts/*.sol package.json LICENSE README.md dist/.",
-    "release:publish": "yarn np --contents dist/.",
-    "release": "yarn release:prepare && yarn release:publish"
+    "release": "np --any-branch"
   },
   "repository": {
     "type": "git",
