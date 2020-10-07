@@ -1,6 +1,6 @@
 pragma solidity 0.6.6;
 
-import "./IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 
 /**
@@ -14,22 +14,22 @@ contract Utils {
     /// getDecimalsConstant(), for gas optimization purposes
     /// which return decimals from a constant list of popular
     /// tokens.
-    IERC20 internal constant ETH_TOKEN_ADDRESS = IERC20(
+    ERC20 internal constant ETH_TOKEN_ADDRESS = ERC20(
         0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
     );
-    IERC20 internal constant USDT_TOKEN_ADDRESS = IERC20(
+    ERC20 internal constant USDT_TOKEN_ADDRESS = ERC20(
         0xdAC17F958D2ee523a2206206994597C13D831ec7
     );
-    IERC20 internal constant DAI_TOKEN_ADDRESS = IERC20(
+    ERC20 internal constant DAI_TOKEN_ADDRESS = ERC20(
         0x6B175474E89094C44Da98b954EedeAC495271d0F
     );
-    IERC20 internal constant USDC_TOKEN_ADDRESS = IERC20(
+    ERC20 internal constant USDC_TOKEN_ADDRESS = ERC20(
         0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
     );
-    IERC20 internal constant WBTC_TOKEN_ADDRESS = IERC20(
+    ERC20 internal constant WBTC_TOKEN_ADDRESS = ERC20(
         0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599
     );
-    IERC20 internal constant KNC_TOKEN_ADDRESS = IERC20(
+    ERC20 internal constant KNC_TOKEN_ADDRESS = ERC20(
         0xdd974D5C2e2928deA5F71b9825b8b646686BD200
     );
     uint256 public constant BPS = 10000; // Basic Price Steps. 1 step = 0.01%
@@ -40,14 +40,14 @@ contract Utils {
     uint256 internal constant ETH_DECIMALS = 18;
     uint256 internal constant MAX_ALLOWANCE = uint256(-1); // token.approve inifinite
 
-    mapping(IERC20 => uint256) internal decimals;
+    mapping(ERC20 => uint256) internal decimals;
 
     /// @dev Sets the decimals of a token to storage if not already set, and returns
     ///      the decimals value of the token. Prefer using this function over
     ///      getDecimals(), to avoid forgetting to set decimals in local storage.
     /// @param token The token type
     /// @return tokenDecimals The decimals of the token
-    function getSetDecimals(IERC20 token) internal returns (uint256 tokenDecimals) {
+    function getSetDecimals(ERC20 token) internal returns (uint256 tokenDecimals) {
         tokenDecimals = getDecimalsConstant(token);
         if (tokenDecimals > 0) return tokenDecimals;
 
@@ -62,7 +62,7 @@ contract Utils {
     /// @param token The token type
     /// @param user The user's address
     /// @return The balance
-    function getBalance(IERC20 token, address user) internal view returns (uint256) {
+    function getBalance(ERC20 token, address user) internal view returns (uint256) {
         if (token == ETH_TOKEN_ADDRESS) {
             return user.balance;
         } else {
@@ -74,7 +74,7 @@ contract Utils {
     ///      or from token.decimals(). Prefer using getSetDecimals when possible.
     /// @param token The token type
     /// @return tokenDecimals The decimals of the token
-    function getDecimals(IERC20 token) internal view returns (uint256 tokenDecimals) {
+    function getDecimals(ERC20 token) internal view returns (uint256 tokenDecimals) {
         // return token decimals if has constant value
         tokenDecimals = getDecimalsConstant(token);
         if (tokenDecimals > 0) return tokenDecimals;
@@ -87,8 +87,8 @@ contract Utils {
     }
 
     function calcDestAmount(
-        IERC20 src,
-        IERC20 dest,
+        ERC20 src,
+        ERC20 dest,
         uint256 srcAmount,
         uint256 rate
     ) internal view returns (uint256) {
@@ -96,8 +96,8 @@ contract Utils {
     }
 
     function calcSrcAmount(
-        IERC20 src,
-        IERC20 dest,
+        ERC20 src,
+        ERC20 dest,
         uint256 destAmount,
         uint256 rate
     ) internal view returns (uint256) {
@@ -167,7 +167,7 @@ contract Utils {
     /// @dev save storage access by declaring token decimal constants
     /// @param token The token type
     /// @return token decimals
-    function getDecimalsConstant(IERC20 token) internal pure returns (uint256) {
+    function getDecimalsConstant(ERC20 token) internal pure returns (uint256) {
         if (token == ETH_TOKEN_ADDRESS) {
             return ETH_DECIMALS;
         } else if (token == USDT_TOKEN_ADDRESS) {
