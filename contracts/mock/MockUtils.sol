@@ -5,13 +5,13 @@ import "../Utils.sol";
 
 /// @title Kyber utils contract
 contract MockUtils is Utils {
-    function mockGetSetDecimals(IERC20 token) public returns (uint256) {
+    function mockGetSetDecimals(IERC20Ext token) public returns (uint256) {
         return getSetDecimals(token);
     }
 
     function mockCalcDestAmount(
-        IERC20 src,
-        IERC20 dest,
+        IERC20Ext src,
+        IERC20Ext dest,
         uint256 srcAmount,
         uint256 rate
     ) public view returns (uint256) {
@@ -19,23 +19,23 @@ contract MockUtils is Utils {
     }
 
     function mockCalcSrcAmount(
-        IERC20 src,
-        IERC20 dest,
+        IERC20Ext src,
+        IERC20Ext dest,
         uint256 destAmount,
         uint256 rate
     ) public view returns (uint256) {
         return calcSrcAmount(src, dest, destAmount, rate);
     }
 
-    function mockGetBalance(IERC20 token, address user) public view returns (uint256) {
+    function mockGetBalance(IERC20Ext token, address user) public view returns (uint256) {
         return getBalance(token, user);
     }
 
-    function mockGetDecimals(IERC20 token) public view returns (uint256) {
+    function mockGetDecimals(IERC20Ext token) public view returns (uint256) {
         return getDecimals(token);
     }
 
-    function mockGetDecimalsMap(IERC20 token) public view returns (uint256) {
+    function mockGetDecimalsMap(IERC20Ext token) public view returns (uint256) {
         return decimals[token];
     }
 
@@ -66,7 +66,7 @@ contract MockUtils is Utils {
         return calcRateFromQty(srcAmount, destAmount, srcDecimals, dstDecimals);
     }
 
-    function mockGetEthTokenAddress() public pure returns (IERC20) {
+    function mockGetEthTokenAddress() public pure returns (IERC20Ext) {
         return ETH_TOKEN_ADDRESS;
     }
 

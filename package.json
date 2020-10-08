@@ -1,6 +1,6 @@
 {
   "name": "@kyber.network/utils-sc",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "This repository has the utils contracts for the Kyber protocol.",
   "directories": {
     "test": "test"
@@ -45,7 +45,9 @@
     "solidity-coverage": "0.7.10",
     "yargs": "16.0.3"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@openzeppelin/contracts": "3.2.0"
+  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
