@@ -1,5 +1,6 @@
 const MockWithdrawable = artifacts.require('MockWithdrawable.sol');
 const TestToken = artifacts.require('Token.sol');
+const TokenTransferNoReturn = artifacts.require('TokenTransferNoReturn.sol');
 
 const Helper = require('./helper.js');
 const BN = web3.utils.BN;
@@ -21,6 +22,7 @@ contract('Withdrawable', function (accounts) {
     user = accounts[0];
     admin = accounts[1];
     token = await TestToken.new('tst', 'test', 18, {from: accounts[2]});
+    tokenTransferNoReturn = await TokenTransferNoReturn.new('tst', 'test', 18, {from: accounts[2]});
   });
 
   describe('test token transfer permissions', async () => {
@@ -28,7 +30,10 @@ contract('Withdrawable', function (accounts) {
       withdrawableInst = await MockWithdrawable.new({from: admin});
       // transfer some tokens to withdrawable.
       await token.transfer(withdrawableInst.address, initialTokenBalance, {from: accounts[2]});
+      await tokenTransferNoReturn.transfer(withdrawableInst.address, initialTokenBalance, {from: accounts[2]});
       let balance = await token.balanceOf(withdrawableInst.address);
+      Helper.assertEqual(balance, initialTokenBalance, 'unexpected balance in withdrawable contract.');
+      balance = await tokenTransferNoReturn.balanceOf(withdrawableInst.address);
       Helper.assertEqual(balance, initialTokenBalance, 'unexpected balance in withdrawable contract.');
     });
 
@@ -47,6 +52,24 @@ contract('Withdrawable', function (accounts) {
       );
 
       balance = await token.balanceOf(user);
+      Helper.assertEqual(balance, tokenWithdrawAmt, 'unexpected balance in user.');
+    });
+
+    it('should test withdraw token with no return values success for admin.', async function () {
+      let rxAdmin = await withdrawableInst.admin();
+      Helper.assertEqual(admin, rxAdmin, 'wrong admin ' + rxAdmin.toString());
+
+      // withdraw the tokens with no  transfer return values from withdrawableInst
+      await withdrawableInst.withdrawToken(tokenTransferNoReturn.address, tokenWithdrawAmt, user, {from: admin});
+
+      balance = await tokenTransferNoReturn.balanceOf(withdrawableInst.address);
+      Helper.assertEqual(
+        balance,
+        initialTokenBalance.sub(tokenWithdrawAmt),
+        'unexpected balance in withdrawble contract.'
+      );
+
+      balance = await tokenTransferNoReturn.balanceOf(user);
       Helper.assertEqual(balance, tokenWithdrawAmt, 'unexpected balance in user.');
     });
 
