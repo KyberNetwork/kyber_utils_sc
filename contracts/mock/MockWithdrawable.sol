@@ -1,10 +1,11 @@
-pragma solidity 0.6.6;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.7.6;
 
 import "../Withdrawable.sol";
 
 
 contract MockWithdrawable is Withdrawable {
-    constructor() public Withdrawable(msg.sender) {}
+    constructor() Withdrawable(msg.sender) {}
 
     receive() external payable {}
 }

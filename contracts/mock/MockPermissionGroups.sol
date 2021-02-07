@@ -1,4 +1,5 @@
-pragma solidity 0.6.6;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.7.6;
 
 import "../PermissionGroups.sol";
 
@@ -7,7 +8,7 @@ contract MockPermissionGroups is PermissionGroups {
     uint256 public rate;
     bool public tradeActive = true;
 
-    constructor() public PermissionGroups(msg.sender) {}
+    constructor(address _admin) PermissionGroups(_admin) {}
 
     function activateTrade() public onlyOperator {
         tradeActive = true;

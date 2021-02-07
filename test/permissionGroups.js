@@ -1,5 +1,4 @@
 let MockPermission = artifacts.require('./MockPermissionGroups.sol');
-let Permission = artifacts.require('./PermissionGroups.sol');
 let Helper = require('./helper.js');
 
 const BN = web3.utils.BN;
@@ -26,7 +25,7 @@ contract('PermissionGroups', function (accounts) {
   });
 
   beforeEach('it should deploy a new permissions group inst', async () => {
-    permissionsInst = await MockPermission.new({from: mainAdmin});
+    permissionsInst = await MockPermission.new(mainAdmin, {from: mainAdmin});
   });
 
   describe('test events', async () => {
@@ -114,7 +113,7 @@ contract('PermissionGroups', function (accounts) {
     });
 
     it('should revert for zeroAddress in constructor', async () => {
-      await expectRevert(Permission.new(zeroAddress, {from: mainAdmin}), 'admin 0');
+      await expectRevert(MockPermission.new(zeroAddress, {from: mainAdmin}), 'admin 0');
     });
   });
 

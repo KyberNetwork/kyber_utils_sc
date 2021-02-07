@@ -1,6 +1,8 @@
-pragma solidity 0.6.6;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.7.6;
 
-contract PermissionGroups {
+
+abstract contract PermissionGroups {
     uint256 internal constant MAX_GROUP_SIZE = 50;
 
     address public admin;
@@ -18,7 +20,7 @@ contract PermissionGroups {
 
     event AlerterAdded(address newAlerter, bool isAdd);
 
-    constructor(address _admin) public {
+    constructor(address _admin) {
         require(_admin != address(0), "admin 0");
         admin = _admin;
     }

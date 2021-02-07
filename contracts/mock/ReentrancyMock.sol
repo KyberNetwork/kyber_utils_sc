@@ -1,4 +1,5 @@
-pragma solidity 0.6.6;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.7.6;
 
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./ReentrancyAttack.sol";
@@ -7,7 +8,7 @@ import "./ReentrancyAttack.sol";
 contract ReentrancyMock is ReentrancyGuard {
     uint256 public counter;
 
-    constructor() public {
+    constructor() {
         counter = 0;
     }
 

@@ -1,4 +1,5 @@
-pragma solidity 0.6.6;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.7.6;
 
 /* all this file is based on code from open zepplin
  * https://github.com/OpenZeppelin/zeppelin-solidity/tree/master/contracts/token */
@@ -139,6 +140,8 @@ contract BasicToken is ERC20Basic {
  * https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is BasicToken, ERC20 {
+    using SafeMath for uint256;
+
     mapping(address => mapping(address => uint256)) public allowed;
 
     function transferFrom(
@@ -184,6 +187,8 @@ contract StandardToken is BasicToken, ERC20 {
  * as they wish using `transfer` and other `StandardToken` functions.
  */
 contract TokenTransferNoReturn is StandardToken {
+    using SafeMath for uint256;
+
     string public name = "Test";
     string public symbol = "TST";
     uint256 public decimals = 18;
@@ -195,7 +200,7 @@ contract TokenTransferNoReturn is StandardToken {
         string memory _name,
         string memory _symbol,
         uint256 _decimals
-    ) public {
+    ) {
         totalSupply = initialSupply;
         balances[msg.sender] = initialSupply;
         name = _name;
