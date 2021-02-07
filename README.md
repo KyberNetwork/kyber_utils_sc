@@ -22,7 +22,7 @@ We use `yarn` as the package manager. You may use `npm` and `npx` instead, but c
 
 ### Example Commands
 - `yarn test` (Runs all tests)
-- `yarn buidler test --no-compile ./test/utils.js` (Test only utils.js)
+- `yarn hardhat test --no-compile ./test/utils.js` (Test only utils.js)
 or
 - `./test.sh -f ./test/utils.js` (Test only utils.js)
 

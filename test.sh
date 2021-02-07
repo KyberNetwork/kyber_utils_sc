@@ -6,7 +6,7 @@ while getopts "f:" arg; do
 done
 
 if [ -n "$FILE" ]; then
-  yarn buidler test $FILE
+  yarn hardhat test $FILE
 else
-  yarn buidler test --config ./buidler.config.js
+  yarn hardhat test --config ./hardhat.config.js
 fi
