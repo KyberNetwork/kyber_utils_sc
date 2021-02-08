@@ -9,9 +9,15 @@
     "avoid-throw": "error",
     "avoid-tx-origin": "off",
     "check-send-result": "error",
-    "compiler-version": ["error","0.7.6"],
+    "compiler-version": ["error", "0.7.6"],
     "const-name-snakecase": "error",
     "func-name-mixedcase": "error",
+    "func-visibility": [
+      "warn",
+      {
+        "ignoreConstructors": true
+      }
+    ],
     "imports-on-top": "error",
     "mark-callable-contracts": "off",
     "max-line-length": ["error", 99],
@@ -25,7 +31,7 @@
     "not-rely-on-time": "off",
     "ordering": "error",
     "payable-fallback": "error",
-    "quotes": ["error","double"],
+    "quotes": ["error", "double"],
     "reason-string": "error",
     "reentrancy": "error",
     "state-visibility": "error",

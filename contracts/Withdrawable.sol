@@ -3,16 +3,16 @@ pragma solidity 0.7.6;
 
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "./IERC20Ext.sol";
-import "./PermissionGroups.sol";
+import "./PermissionAdmin.sol";
 
 
-abstract contract Withdrawable is PermissionGroups {
+abstract contract Withdrawable is PermissionAdmin {
     using SafeERC20 for IERC20Ext;
 
     event TokenWithdraw(IERC20Ext token, uint256 amount, address sendTo);
     event EtherWithdraw(uint256 amount, address sendTo);
 
-    constructor(address _admin) PermissionGroups(_admin) {}
+    constructor(address _admin) PermissionAdmin(_admin) {}
 
     /**
      * @dev Withdraw all IERC20Ext compatible tokens
