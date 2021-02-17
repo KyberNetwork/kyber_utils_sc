@@ -1,121 +1,66 @@
 'use strict';
 const fs = require('fs');
-const {resolve} = require('path');
-const {promisify} = require('util');
+const util = require('util');
 const got = require('got');
 const yargs = require('yargs');
-const {contract} = require('hardhat');
 
-let mainPath = 'artifacts/contracts';
+let path = 'artifacts/contracts';
 
-const readdir = promisify(fs.readdir);
-const stat = promisify(fs.stat);
+const readdir = util.promisify(fs.readdir);
 
-let argv = yargs.default('branch', 'master').alias('b', 'branch').argv;
+async function getFiles(dir, files_, names_) {
+  var files = await readdir(dir);
+  for (var i in files) {
+    var fullDir = dir + '/' + files[i];
+    if (fs.statSync(fullDir).isDirectory()) {
+      await getFiles(fullDir, files_, names_);
+    } else {
+      files_.push(fullDir);
+      names_.push(files[i]);
+    }
+  }
+  return files_, names_;
+}
 
 async function generateCodeSizeReport() {
   let result = {};
-  let fileNames = await getFiles(mainPath);
-  for (let i = 0; i < fileNames.length; i++) {
-    let fileName = fileNames[i];
-    let rawData = fs.readFileSync(fileName);
+  let fileDirs = [];
+  let fileNames = [];
+  await getFiles(path, fileDirs, fileNames);
+
+  for (let i = 0; i < fileDirs.length; i++) {
+    let fileDir = fileDirs[i];
+    let rawData = fs.readFileSync(fileDir);
     let contractData = JSON.parse(rawData);
-    if (contractData.deployedBytecode !== undefined) {
+    if (contractData.deployedBytecode != undefined) {
       let codeSize = contractData.deployedBytecode.length / 2 - 1;
       if (codeSize > 0) {
-        let concatFileName = fileName.substring(fileName.lastIndexOf('contracts/') + 10);
-        result[concatFileName] = codeSize;
+        result[fileNames[i]] = codeSize;
       }
     }
   }
   return result;
 }
 
-async function getFiles(dir) {
-  const subdirs = await readdir(dir);
-  const files = await Promise.all(
-    subdirs.map(async (subdir) => {
-      const res = resolve(dir, subdir);
-      return (await stat(res)).isDirectory() ? getFiles(res) : res;
-    })
-  );
-  return files.reduce((a, f) => a.concat(f), []);
-}
-
 async function writeReport(report) {
   let jsonContent = JSON.stringify(report, null, '\t');
-  let reportDir = 'report';
-  if (process.env.TRAVIS_BRANCH !== undefined) {
-    reportDir = `report/${process.env.TRAVIS_BRANCH}`;
-  }
-  let reportFile = `${reportDir}/contractSize.json`;
+  let reportDir = `report/`;
   if (!fs.existsSync(reportDir)) {
     fs.mkdirSync(reportDir, {recursive: true});
   }
+  let reportFile = `${reportDir}contractSize.json`;
   fs.writeFile(reportFile, jsonContent, 'utf8', function (err) {
     if (err) {
       console.log('An error occured while writing JSON Object to File.');
       return console.log(err);
     }
   });
+  console.table(report);
 }
 
-async function getRemoteReport() {
-  try {
-    const url = `http://katalyst-coverage.knstats.com/report/${argv.branch}/contractSize.json`;
-    return await got(url).json();
-  } catch (error) {
-    // console.log(error);
-    return false;
-  }
-}
-
-async function compareContractSize() {
+async function printContractSize() {
   let contractSizeReport = await generateCodeSizeReport();
   await writeReport(contractSizeReport);
-  let remoteReport = await getRemoteReport();
-  if (!remoteReport) {
-    console.log(`Could not get report for ${argv.branch}`);
-    console.log('Current contract size report');
-    console.table(contractSizeReport);
-    return false;
-  }
-  let diffDict = {};
-  for (let contract in contractSizeReport) {
-    if (contract in remoteReport) {
-      let baseBranchSize = remoteReport[contract];
-      let currentSize = contractSizeReport[contract];
-      let diff = currentSize - baseBranchSize;
-      if (diff != 0) {
-        diffDict[contract] = {
-          [argv.branch]: baseBranchSize,
-          current: currentSize,
-          diff: diff,
-        };
-      }
-    }
-  }
-  for (let contract in remoteReport) {
-    if (contract in remoteReport && !(contract in diffDict)) {
-      let baseBranchSize = remoteReport[contract];
-      let currentSize = contractSizeReport[contract];
-      let diff = currentSize - baseBranchSize;
-      if (diff != 0) {
-        diffDict[contract] = {
-          [argv.branch]: baseBranchSize,
-          current: currentSize,
-          diff: diff,
-        };
-      }
-    }
-  }
-  if (Object.keys(diffDict).length > 0) {
-    console.log(`There is change in following contract size with ${argv.branch}`);
-    console.table(diffDict);
-  } else {
-    console.log("Contract size didn't change");
-    console.table(contractSizeReport);
-  }
 }
 
-compareContractSize();
+printContractSize();
