@@ -4,22 +4,39 @@ const util = require('util');
 const got = require('got');
 const yargs = require('yargs');
 
-let path = 'artifacts';
+let path = 'artifacts/contracts';
 
 const readdir = util.promisify(fs.readdir);
 
-let argv = yargs.default('branch', 'master').alias('b', 'branch').argv;
+async function getFiles(dir, files_, names_) {
+  var files = await readdir(dir);
+  for (var i in files) {
+    var fullDir = dir + '/' + files[i];
+    if (fs.statSync(fullDir).isDirectory()) {
+      await getFiles(fullDir, files_, names_);
+    } else {
+      files_.push(fullDir);
+      names_.push(files[i]);
+    }
+  }
+  return files_, names_;
+}
 
 async function generateCodeSizeReport() {
   let result = {};
-  let fileNames = await readdir(path);
-  for (let i = 0; i < fileNames.length; i++) {
-    let fileName = fileNames[i];
-    let rawData = fs.readFileSync(path + '/' + fileName);
+  let fileDirs = [];
+  let fileNames = [];
+  await getFiles(path, fileDirs, fileNames);
+
+  for (let i = 0; i < fileDirs.length; i++) {
+    let fileDir = fileDirs[i];
+    let rawData = fs.readFileSync(fileDir);
     let contractData = JSON.parse(rawData);
-    let codeSize = contractData.deployedBytecode.length / 2 - 1;
-    if (codeSize > 0) {
-      result[fileName] = codeSize;
+    if (contractData.deployedBytecode != undefined) {
+      let codeSize = contractData.deployedBytecode.length / 2 - 1;
+      if (codeSize > 0) {
+        result[fileNames[i]] = codeSize;
+      }
     }
   }
   return result;
@@ -27,78 +44,23 @@ async function generateCodeSizeReport() {
 
 async function writeReport(report) {
   let jsonContent = JSON.stringify(report, null, '\t');
-  let reportDir = 'report';
-  if (process.env.TRAVIS_BRANCH !== undefined) {
-    reportDir = `report/${process.env.TRAVIS_BRANCH}`;
-  }
-  let reportFile = `${reportDir}/contractSize.json`;
+  let reportDir = `report/`;
   if (!fs.existsSync(reportDir)) {
     fs.mkdirSync(reportDir, {recursive: true});
   }
+  let reportFile = `${reportDir}contractSize.json`;
   fs.writeFile(reportFile, jsonContent, 'utf8', function (err) {
     if (err) {
       console.log('An error occured while writing JSON Object to File.');
       return console.log(err);
     }
   });
+  console.table(report);
 }
 
-async function getRemoteReport() {
-  try {
-    const url = `http://katalyst-coverage.knstats.com/report/${argv.branch}/contractSize.json`;
-    return await got(url).json();
-  } catch (error) {
-    // console.log(error);
-    return false;
-  }
-}
-
-async function compareContractSize() {
+async function printContractSize() {
   let contractSizeReport = await generateCodeSizeReport();
   await writeReport(contractSizeReport);
-  let remoteReport = await getRemoteReport();
-  if (!remoteReport) {
-    console.log(`Could not get report for ${argv.branch}`);
-    console.log('Current contract size report');
-    console.table(contractSizeReport);
-    return false;
-  }
-  let diffDict = {};
-  for (let contract in contractSizeReport) {
-    if (contract in remoteReport) {
-      let baseBranchSize = remoteReport[contract];
-      let currentSize = contractSizeReport[contract];
-      let diff = currentSize - baseBranchSize;
-      if (diff != 0) {
-        diffDict[contract] = {
-          [argv.branch]: baseBranchSize,
-          current: currentSize,
-          diff: diff,
-        };
-      }
-    }
-  }
-  for (let contract in remoteReport) {
-    if (contract in remoteReport && !(contract in diffDict)) {
-      let baseBranchSize = remoteReport[contract];
-      let currentSize = contractSizeReport[contract];
-      let diff = currentSize - baseBranchSize;
-      if (diff != 0) {
-        diffDict[contract] = {
-          [argv.branch]: baseBranchSize,
-          current: currentSize,
-          diff: diff,
-        };
-      }
-    }
-  }
-  if (Object.keys(diffDict).length > 0) {
-    console.log(`There is change in following contract size with ${argv.branch}`);
-    console.table(diffDict);
-  } else {
-    console.log("Contract size didn't change");
-    console.table(contractSizeReport);
-  }
 }
 
-compareContractSize();
+printContractSize();

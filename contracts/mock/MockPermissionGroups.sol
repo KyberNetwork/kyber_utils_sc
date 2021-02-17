@@ -1,13 +1,21 @@
-pragma solidity 0.6.6;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.7.6;
 
-import "../PermissionGroups.sol";
+import "../PermissionAdmin.sol";
+import "../PermissionAlerters.sol";
+import "../PermissionOperators.sol";
 
 
-contract MockPermissionGroups is PermissionGroups {
+contract MockPermissionGroups is PermissionAdmin, PermissionAlerters, PermissionOperators {
     uint256 public rate;
+    bool public adminFlag = false;
     bool public tradeActive = true;
 
-    constructor() public PermissionGroups(msg.sender) {}
+    constructor(address _admin) PermissionAdmin(_admin) {}
+
+    function adminOnly() public onlyAdmin {
+        adminFlag = true;
+    }
 
     function activateTrade() public onlyOperator {
         tradeActive = true;

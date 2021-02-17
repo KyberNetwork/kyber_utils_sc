@@ -1,4 +1,5 @@
-pragma solidity 0.6.6;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.7.6;
 
 import "./IERC20Ext.sol";
 
@@ -9,11 +10,11 @@ import "./IERC20Ext.sol";
  * inherited by most of kyber contracts.
  * previous utils implementations are for previous solidity versions.
  */
-contract Utils {
-    /// Declared constants below to be used in tandem with
-    /// getDecimalsConstant(), for gas optimization purposes
-    /// which return decimals from a constant list of popular
-    /// tokens.
+abstract contract Utils {
+    // Declared constants below to be used in tandem with
+    // getDecimalsConstant(), for gas optimization purposes
+    // which return decimals from a constant list of popular
+    // tokens.
     IERC20Ext internal constant ETH_TOKEN_ADDRESS = IERC20Ext(
         0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
     );
