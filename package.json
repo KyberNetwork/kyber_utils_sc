@@ -1,6 +1,6 @@
 {
   "name": "@kyber.network/utils-sc",
-  "version": "2.1.3",
+  "version": "2.2.1",
   "description": "This repository has the utils contracts for the Kyber protocol.",
   "main": "hardhat.config.js",
   "directories": {
