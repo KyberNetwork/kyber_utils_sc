@@ -5,8 +5,8 @@ require('chai').use(require('chai-as-promised')).use(require('chai-bn')(BN)).sho
 
 const BPS = new BN(10000);
 const precisionUnits = new BN(10).pow(new BN(18));
-const ethDecimals = new BN(18);
-const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+const bnbDecimals = new BN(18);
+const bnbAddress = '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB';
 const zeroAddress = constants.ZERO_ADDRESS;
 const emptyHint = '0x';
 const zeroBN = new BN(0);
@@ -16,8 +16,8 @@ const MAX_ALLOWANCE = new BN(2).pow(new BN(256)).sub(new BN(1));
 module.exports = {
   BPS,
   precisionUnits,
-  ethDecimals,
-  ethAddress,
+  bnbDecimals,
+  bnbAddress,
   zeroAddress,
   emptyHint,
   zeroBN,

@@ -6,13 +6,13 @@ import "../Utils.sol";
 
 /// @title Kyber utils contract
 contract MockUtils is Utils {
-    function mockGetSetDecimals(IERC20Ext token) public returns (uint256) {
+    function mockGetSetDecimals(IBEP20 token) public returns (uint256) {
         return getSetDecimals(token);
     }
 
     function mockCalcDestAmount(
-        IERC20Ext src,
-        IERC20Ext dest,
+        IBEP20 src,
+        IBEP20 dest,
         uint256 srcAmount,
         uint256 rate
     ) public view returns (uint256) {
@@ -20,23 +20,23 @@ contract MockUtils is Utils {
     }
 
     function mockCalcSrcAmount(
-        IERC20Ext src,
-        IERC20Ext dest,
+        IBEP20 src,
+        IBEP20 dest,
         uint256 destAmount,
         uint256 rate
     ) public view returns (uint256) {
         return calcSrcAmount(src, dest, destAmount, rate);
     }
 
-    function mockGetBalance(IERC20Ext token, address user) public view returns (uint256) {
+    function mockGetBalance(IBEP20 token, address user) public view returns (uint256) {
         return getBalance(token, user);
     }
 
-    function mockGetDecimals(IERC20Ext token) public view returns (uint256) {
+    function mockGetDecimals(IBEP20 token) public view returns (uint256) {
         return getDecimals(token);
     }
 
-    function mockGetDecimalsMap(IERC20Ext token) public view returns (uint256) {
+    function mockGetDecimalsMap(IBEP20 token) public view returns (uint256) {
         return decimals[token];
     }
 
@@ -67,8 +67,8 @@ contract MockUtils is Utils {
         return calcRateFromQty(srcAmount, destAmount, srcDecimals, dstDecimals);
     }
 
-    function mockGetEthTokenAddress() public pure returns (IERC20Ext) {
-        return ETH_TOKEN_ADDRESS;
+    function mockGetBnbTokenAddress() public pure returns (IBEP20) {
+        return BNB_TOKEN_ADDRESS;
     }
 
     function mockGetPrecision() public pure returns (uint256) {
@@ -87,8 +87,8 @@ contract MockUtils is Utils {
         return MAX_DECIMALS;
     }
 
-    function mockGetEthDecimals() public pure returns (uint256) {
-        return ETH_DECIMALS;
+    function mockGetBnbDecimals() public pure returns (uint256) {
+        return BNB_DECIMALS;
     }
 
     function mockGetBPS() public pure returns (uint256) {

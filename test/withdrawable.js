@@ -11,8 +11,8 @@ let user;
 let withdrawableInst;
 let initialTokenBalance = new BN(100);
 let tokenWithdrawAmt = new BN(60);
-let initialEtherBalance = new BN(10);
-let etherWithdrawAmt = new BN(3);
+let initialBnbBalance = new BN(10);
+let bnbWithdrawAmt = new BN(3);
 
 const {zeroBN} = require('./helper.js');
 const {expectRevert} = require('@openzeppelin/test-helpers');
@@ -91,37 +91,37 @@ contract('Withdrawable', function (accounts) {
     });
   });
 
-  describe('test ETH transfer permissions', async () => {
-    beforeEach('deploy a new MockWithdrawable inst with some initial ETH', async function () {
+  describe('test BNB transfer permissions', async () => {
+    beforeEach('deploy a new MockWithdrawable inst with some initial BNB', async function () {
       withdrawableInst = await MockWithdrawable.new({from: admin});
-      // transfer some ETH
-      await withdrawableInst.send(initialEtherBalance, {from: accounts[4]});
+      // transfer some BNB
+      await withdrawableInst.send(initialBnbBalance, {from: accounts[4]});
       let balance = await Helper.getBalancePromise(withdrawableInst.address);
-      Helper.assertEqual(balance, initialEtherBalance, 'unexpected balance in withdrawable contract.');
+      Helper.assertEqual(balance, initialBnbBalance, 'unexpected balance in withdrawable contract.');
     });
 
-    it('should test withdraw ether success for admin.', async function () {
-      // withdraw the ether from withdrawableInst
-      await withdrawableInst.withdrawEther(etherWithdrawAmt, user, {from: admin});
+    it('should test withdraw bnb success for admin.', async function () {
+      // withdraw the bnb from withdrawableInst
+      await withdrawableInst.withdrawBnb(bnbWithdrawAmt, user, {from: admin});
 
       let balance = await Helper.getBalancePromise(withdrawableInst.address);
       Helper.assertEqual(
         balance,
-        initialEtherBalance.sub(etherWithdrawAmt),
+        initialBnbBalance.sub(bnbWithdrawAmt),
         'unexpected balance in withdrawble contract.'
       );
     });
 
-    it('should test withdraw ether reject for non admin.', async function () {
-      // try to withdraw the ether from withdrawableInst
-      await expectRevert(withdrawableInst.withdrawEther(etherWithdrawAmt, user, {from: user}), 'only admin');
+    it('should test withdraw bnb reject for non admin.', async function () {
+      // try to withdraw the bnb from withdrawableInst
+      await expectRevert(withdrawableInst.withdrawBnb(bnbWithdrawAmt, user, {from: user}), 'only admin');
     });
 
-    it('should test withdraw ether reject when amount too high.', async function () {
-      etherWithdrawAmt = etherWithdrawAmt.add(initialEtherBalance);
+    it('should test withdraw bnb reject when amount too high.', async function () {
+      bnbWithdrawAmt = bnbWithdrawAmt.add(initialBnbBalance);
 
-      // try to withdraw the ether from withdrawableInst
-      await expectRevert.unspecified(withdrawableInst.withdrawEther(etherWithdrawAmt, user, {from: admin}));
+      // try to withdraw the bnb from withdrawableInst
+      await expectRevert.unspecified(withdrawableInst.withdrawBnb(bnbWithdrawAmt, user, {from: admin}));
     });
   });
 });

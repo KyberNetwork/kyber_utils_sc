@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.7.6;
 
-import "./IERC20Ext.sol";
+import "./IBEP20.sol";
 
 
 /**
@@ -15,40 +15,25 @@ abstract contract Utils {
     // getDecimalsConstant(), for gas optimization purposes
     // which return decimals from a constant list of popular
     // tokens.
-    IERC20Ext internal constant ETH_TOKEN_ADDRESS = IERC20Ext(
-        0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
-    );
-    IERC20Ext internal constant USDT_TOKEN_ADDRESS = IERC20Ext(
-        0xdAC17F958D2ee523a2206206994597C13D831ec7
-    );
-    IERC20Ext internal constant DAI_TOKEN_ADDRESS = IERC20Ext(
-        0x6B175474E89094C44Da98b954EedeAC495271d0F
-    );
-    IERC20Ext internal constant USDC_TOKEN_ADDRESS = IERC20Ext(
-        0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
-    );
-    IERC20Ext internal constant WBTC_TOKEN_ADDRESS = IERC20Ext(
-        0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599
-    );
-    IERC20Ext internal constant KNC_TOKEN_ADDRESS = IERC20Ext(
-        0xdd974D5C2e2928deA5F71b9825b8b646686BD200
+    IBEP20 internal constant BNB_TOKEN_ADDRESS = IBEP20(
+        0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB
     );
     uint256 public constant BPS = 10000; // Basic Price Steps. 1 step = 0.01%
     uint256 internal constant PRECISION = (10**18);
     uint256 internal constant MAX_QTY = (10**28); // 10B tokens
-    uint256 internal constant MAX_RATE = (PRECISION * 10**7); // up to 10M tokens per eth
+    uint256 internal constant MAX_RATE = (PRECISION * 10**7); // up to 10M tokens per bnb
     uint256 internal constant MAX_DECIMALS = 18;
-    uint256 internal constant ETH_DECIMALS = 18;
+    uint256 internal constant BNB_DECIMALS = 18;
     uint256 internal constant MAX_ALLOWANCE = uint256(-1); // token.approve inifinite
 
-    mapping(IERC20Ext => uint256) internal decimals;
+    mapping(IBEP20 => uint256) internal decimals;
 
     /// @dev Sets the decimals of a token to storage if not already set, and returns
     ///      the decimals value of the token. Prefer using this function over
     ///      getDecimals(), to avoid forgetting to set decimals in local storage.
     /// @param token The token type
     /// @return tokenDecimals The decimals of the token
-    function getSetDecimals(IERC20Ext token) internal returns (uint256 tokenDecimals) {
+    function getSetDecimals(IBEP20 token) internal returns (uint256 tokenDecimals) {
         tokenDecimals = getDecimalsConstant(token);
         if (tokenDecimals > 0) return tokenDecimals;
 
@@ -63,8 +48,8 @@ abstract contract Utils {
     /// @param token The token type
     /// @param user The user's address
     /// @return The balance
-    function getBalance(IERC20Ext token, address user) internal view returns (uint256) {
-        if (token == ETH_TOKEN_ADDRESS) {
+    function getBalance(IBEP20 token, address user) internal view returns (uint256) {
+        if (token == BNB_TOKEN_ADDRESS) {
             return user.balance;
         } else {
             return token.balanceOf(user);
@@ -75,7 +60,7 @@ abstract contract Utils {
     ///      or from token.decimals(). Prefer using getSetDecimals when possible.
     /// @param token The token type
     /// @return tokenDecimals The decimals of the token
-    function getDecimals(IERC20Ext token) internal view returns (uint256 tokenDecimals) {
+    function getDecimals(IBEP20 token) internal view returns (uint256 tokenDecimals) {
         // return token decimals if has constant value
         tokenDecimals = getDecimalsConstant(token);
         if (tokenDecimals > 0) return tokenDecimals;
@@ -88,8 +73,8 @@ abstract contract Utils {
     }
 
     function calcDestAmount(
-        IERC20Ext src,
-        IERC20Ext dest,
+        IBEP20 src,
+        IBEP20 dest,
         uint256 srcAmount,
         uint256 rate
     ) internal view returns (uint256) {
@@ -97,8 +82,8 @@ abstract contract Utils {
     }
 
     function calcSrcAmount(
-        IERC20Ext src,
-        IERC20Ext dest,
+        IBEP20 src,
+        IBEP20 dest,
         uint256 destAmount,
         uint256 rate
     ) internal view returns (uint256) {
@@ -168,19 +153,9 @@ abstract contract Utils {
     /// @dev save storage access by declaring token decimal constants
     /// @param token The token type
     /// @return token decimals
-    function getDecimalsConstant(IERC20Ext token) internal pure returns (uint256) {
-        if (token == ETH_TOKEN_ADDRESS) {
-            return ETH_DECIMALS;
-        } else if (token == USDT_TOKEN_ADDRESS) {
-            return 6;
-        } else if (token == DAI_TOKEN_ADDRESS) {
-            return 18;
-        } else if (token == USDC_TOKEN_ADDRESS) {
-            return 6;
-        } else if (token == WBTC_TOKEN_ADDRESS) {
-            return 8;
-        } else if (token == KNC_TOKEN_ADDRESS) {
-            return 18;
+    function getDecimalsConstant(IBEP20 token) internal pure returns (uint256) {
+        if (token == BNB_TOKEN_ADDRESS) {
+            return BNB_DECIMALS;
         } else {
             return 0;
         }

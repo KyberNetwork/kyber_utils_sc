@@ -4,7 +4,7 @@ const TestToken = artifacts.require('Token.sol');
 const TokenNoDecimals = artifacts.require('TokenNoDecimals.sol');
 const {expectRevert} = require('@openzeppelin/test-helpers');
 const BN = web3.utils.BN;
-const {BPS, precisionUnits, ethDecimals, ethAddress, MAX_QTY, MAX_RATE} = require('./helper.js');
+const {BPS, precisionUnits, bnbDecimals, bnbAddress, MAX_QTY, MAX_RATE} = require('./helper.js');
 
 const MAX_DECIMALS = 18;
 const MAX_DECIMAL_DIFF = 18;
@@ -19,17 +19,17 @@ contract('Utils', function (accounts) {
     Helper.assertEqual(await utils.mockGetMaxRate(), MAX_RATE, 'maxrate is not correct');
     Helper.assertEqual(await utils.mockGetMaxQty(), MAX_QTY, 'max qty is not correct');
     Helper.assertEqual(await utils.mockGetMaxDecimals(), MAX_DECIMALS, 'max decimals is not correct');
-    Helper.assertEqual(await utils.mockGetEthDecimals(), ethDecimals, 'eth decimal is not correct');
+    Helper.assertEqual(await utils.mockGetBnbDecimals(), bnbDecimals, 'bnb decimal is not correct');
     Helper.assertEqual(await utils.mockGetBPS(), BPS, 'bps is not correct');
-    Helper.assertEqual(await utils.mockGetEthTokenAddress(), ethAddress, 'eth address is not correct');
+    Helper.assertEqual(await utils.mockGetBnbTokenAddress(), bnbAddress, 'bnb address is not correct');
   });
 
   describe('test get balance', async function () {
-    it('test get eth balance', async function () {
+    it('test get bnb balance', async function () {
       user = accounts[9];
-      let balanceEth = await Helper.getBalancePromise(user);
-      balance = await utils.mockGetBalance(ethAddress, user);
-      Helper.assertEqual(balance, balanceEth);
+      let balanceBnb = await Helper.getBalancePromise(user);
+      balance = await utils.mockGetBalance(bnbAddress, user);
+      Helper.assertEqual(balance, balanceBnb);
     });
 
     it('test get token balance', async function () {
@@ -45,28 +45,9 @@ contract('Utils', function (accounts) {
   });
 
   describe('test get decimals', async function () {
-    it('should check get decimals for eth', async function () {
-      Helper.assertEqual(await utils.mockGetSetDecimals.call(ethAddress), ethDecimals);
-      Helper.assertEqual(await utils.mockGetDecimals(ethAddress), ethDecimals);
-    });
-
-    it('should check get decimals for constant tokens', async function () {
-      const usdtAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
-      const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
-      const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
-      const wbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
-      const kncAddress = '0xdd974D5C2e2928deA5F71b9825b8b646686BD200';
-
-      Helper.assertEqual(await utils.mockGetSetDecimals.call(usdtAddress), 6);
-      Helper.assertEqual(await utils.mockGetDecimals(usdtAddress), 6);
-      Helper.assertEqual(await utils.mockGetSetDecimals.call(daiAddress), 18);
-      Helper.assertEqual(await utils.mockGetDecimals(daiAddress), 18);
-      Helper.assertEqual(await utils.mockGetSetDecimals.call(usdcAddress), 6);
-      Helper.assertEqual(await utils.mockGetDecimals(usdcAddress), 6);
-      Helper.assertEqual(await utils.mockGetSetDecimals.call(wbtcAddress), 8);
-      Helper.assertEqual(await utils.mockGetDecimals(wbtcAddress), 8);
-      Helper.assertEqual(await utils.mockGetSetDecimals.call(kncAddress), 18);
-      Helper.assertEqual(await utils.mockGetDecimals(kncAddress), 18);
+    it('should check get decimals for bnb', async function () {
+      Helper.assertEqual(await utils.mockGetSetDecimals.call(bnbAddress), bnbDecimals);
+      Helper.assertEqual(await utils.mockGetDecimals(bnbAddress), bnbDecimals);
     });
 
     it('should check get decimals for normal token', async function () {
