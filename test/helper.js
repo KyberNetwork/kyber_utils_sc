@@ -200,7 +200,7 @@ function assertApproximate(val1, val2, errorStr) {
 
 module.exports.assertEqualArray = assertEqualArray;
 function assertEqualArray(arr1, arr2, errorStr) {
-  assert(arr1.equals(arr2), `${errorStr} actual=${arr1} expected=${arr2}`);
+  assert(Array(arr1).equals(Array(arr2)), `${errorStr} actual=${arr1} expected=${arr2}`);
 }
 
 // Warn if overriding existing method
