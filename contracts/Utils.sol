@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.7.6;
+pragma solidity ^0.8.0;
 
 import "./IERC20Ext.sol";
 
@@ -39,7 +39,7 @@ abstract contract Utils {
     uint256 internal constant MAX_RATE = (PRECISION * 10**7); // up to 10M tokens per eth
     uint256 internal constant MAX_DECIMALS = 18;
     uint256 internal constant ETH_DECIMALS = 18;
-    uint256 internal constant MAX_ALLOWANCE = uint256(-1); // token.approve inifinite
+    uint256 internal constant MAX_ALLOWANCE = type(uint256).max; // token.approve inifinite
 
     mapping(IERC20Ext => uint256) internal decimals;
 

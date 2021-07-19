@@ -8,5 +8,5 @@ done
 if [ -n "$FILE" ]; then
   yarn hardhat test $FILE
 else
-  yarn hardhat test --config ./hardhat.config.js
+  yarn hardhat test --config ./hardhat.config.ts
 fi

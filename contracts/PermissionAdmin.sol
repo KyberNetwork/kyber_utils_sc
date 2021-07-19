@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.7.6;
+pragma solidity ^0.8.0;
 
 
 abstract contract PermissionAdmin {
@@ -10,14 +10,14 @@ abstract contract PermissionAdmin {
 
     event TransferAdminPending(address pendingAdmin);
 
-    constructor(address _admin) {
-        require(_admin != address(0), "admin 0");
-        admin = _admin;
-    }
-
     modifier onlyAdmin() {
         require(msg.sender == admin, "only admin");
         _;
+    }
+
+    constructor(address _admin) {
+        require(_admin != address(0), "admin 0");
+        admin = _admin;
     }
 
     /**

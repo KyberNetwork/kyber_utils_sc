@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.7.6;
+pragma solidity ^0.8.0;
 
 /* all this file is based on code from open zepplin
  * https://github.com/OpenZeppelin/zeppelin-solidity/tree/master/contracts/token */
