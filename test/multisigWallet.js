@@ -6,10 +6,11 @@ const BN = web3.utils.BN;
 const {zeroAddress, ethAddress} = require('./helper.js');
 const {expectEvent, expectRevert} = require('@openzeppelin/test-helpers');
 
+const MAX_OWNER_COUNT = 50;
+
 let multisigWallet;
 
 let owners;
-let user;
 let required;
 
 contract('MultisigWallet', function (accounts) {
@@ -111,6 +112,7 @@ contract('MultisigWallet', function (accounts) {
       }
       let txData = await multisigWallet.getTransaction(txId);
       Helper.assertEqual(false, txData.executed);
+      Helper.assertEqual(await Helper.getCurrentBlock(), txData.blockNumber);
       Helper.assertEqualArray(hashes, txData.actionHashes);
       await verifyConfirmations(multisigWallet, txId, [owners[1]]);
 
@@ -142,6 +144,7 @@ contract('MultisigWallet', function (accounts) {
       Helper.assertEqual(targets.length, executionEventCount);
       let txData = await multisigWallet.getTransaction(txId);
       Helper.assertEqual(true, txData.executed);
+      Helper.assertEqual(await Helper.getCurrentBlock(), txData.blockNumber);
       Helper.assertEqualArray(getActionHashes(targets, values, callDatas, txId), txData.actionHashes);
       await verifyConfirmations(multisigWallet, txId, [owners[1]]);
 
@@ -402,17 +405,26 @@ contract('MultisigWallet', function (accounts) {
       let data = encodeFunctionAddOwner(owners[0]);
       await expectRevert(
         multisigWallet.submitTransaction([multisigWallet.address], [0], [data], {from: owners[0]}),
-        'transaction failure'
+        'not an owner'
       );
       data = encodeFunctionAddOwner(zeroAddress);
       await expectRevert(
         multisigWallet.submitTransaction([multisigWallet.address], [0], [data], {from: owners[0]}),
-        'transaction failure'
+        'invalid address'
       );
+      let ownerLength = (await multisigWallet.getOwners()).length;
+      for (let i = 0; i < MAX_OWNER_COUNT - ownerLength; i++) {
+        let newOwner = await Token.new('T', 'T', 10);
+        data = encodeFunctionAddOwner(newOwner.address);
+        await multisigWallet.submitTransaction([multisigWallet.address], [0], [data], {from: owners[0]});
+      }
+      // more than max owner limit
+      data = encodeFunctionAddOwner(accounts[8]);
       await expectRevert(
         multisigWallet.submitTransaction([multisigWallet.address], [0], [data], {from: owners[0]}),
-        'transaction failure'
+        'invalid _required or ownerCount'
       );
+      multisigWallet = await MultiSigWallet.new(owners, 1);
       data = encodeFunctionAddOwner(accounts[8]);
       let tx = await multisigWallet.submitTransaction([multisigWallet.address], [0], [data], {from: owners[0]});
       expectEvent(tx, 'OwnerAddition', {
@@ -430,14 +442,14 @@ contract('MultisigWallet', function (accounts) {
       let data = encodeFunctionRemoveOwner(accounts[8]);
       await expectRevert(
         multisigWallet.submitTransaction([multisigWallet.address], [0], [data], {from: owners[0]}),
-        'transaction failure'
+        'only an owner'
       );
       // only 1 owner, try to remove
       multisigWallet = await MultiSigWallet.new([accounts[0]], 1);
       data = encodeFunctionRemoveOwner(accounts[0]);
       await expectRevert(
         multisigWallet.submitTransaction([multisigWallet.address], [0], [data], {from: accounts[0]}),
-        'transaction failure'
+        'invalid _required or ownerCount'
       );
       multisigWallet = await MultiSigWallet.new(owners, 1);
       // check remove owner, not change requirement
@@ -473,17 +485,17 @@ contract('MultisigWallet', function (accounts) {
       let data = encodeFunctionReplaceOwner(owners[0], owners[0]);
       await expectRevert(
         multisigWallet.submitTransaction([multisigWallet.address], [0], [data], {from: owners[0]}),
-        'transaction failure'
+        'not an owner'
       );
       data = encodeFunctionReplaceOwner(accounts[8], owners[0]);
       await expectRevert(
         multisigWallet.submitTransaction([multisigWallet.address], [0], [data], {from: owners[0]}),
-        'transaction failure'
+        'only an owner'
       );
       data = encodeFunctionReplaceOwner(owners[0], owners[1]);
       await expectRevert(
         multisigWallet.submitTransaction([multisigWallet.address], [0], [data], {from: owners[0]}),
-        'transaction failure'
+        'not an owner'
       );
       owners = [accounts[0], accounts[1]];
       multisigWallet = await MultiSigWallet.new(owners, 1);
@@ -506,13 +518,13 @@ contract('MultisigWallet', function (accounts) {
       let data = encodeFunctionChangeRequirement(owners.length + 1);
       await expectRevert(
         multisigWallet.submitTransaction([multisigWallet.address], [0], [data], {from: owners[0]}),
-        'transaction failure'
+        'invalid _required or ownerCount'
       );
       // change requirement to 0
       data = encodeFunctionChangeRequirement(0);
       await expectRevert(
         multisigWallet.submitTransaction([multisigWallet.address], [0], [data], {from: owners[0]}),
-        'transaction failure'
+        'invalid _required or ownerCount'
       );
 
       data = encodeFunctionChangeRequirement(1);

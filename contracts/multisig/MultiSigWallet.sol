@@ -12,9 +12,11 @@ contract MultiSigWallet {
 
     struct Transaction {
         bytes32[] actionHashes;
+        uint64 blockNumber;
         bool executed;
     }
 
+    string public constant VERSION = "1.0.0";
     uint256 constant public MAX_OWNER_COUNT = 50;
 
     mapping (uint256 => mapping (address => bool)) public confirmations;
@@ -390,6 +392,7 @@ contract MultiSigWallet {
         );
         transactionId = transactionCount;
         transactions[transactionId].executed = false;
+        transactions[transactionId].blockNumber = uint64(block.number);
         for (uint256 i = 0; i < targets.length; i++) {
             require(targets[i] != address(0), "invalid target address");
             bytes32 actionHash = keccak256(
@@ -427,8 +430,8 @@ contract MultiSigWallet {
         );
         Transaction storage txn = transactions[transactionId];
         require(targets.length == txn.actionHashes.length, "invalid lengths");
-        bool success;
         bytes32 actionHash;
+        bool success;
         bytes memory result;
         for (uint256 i = 0; i < targets.length; i++) {
             actionHash = keccak256(
@@ -436,7 +439,18 @@ contract MultiSigWallet {
             );
             require(actionHash == txn.actionHashes[i], "invalid action");
             (success, result) = targets[i].call{value: values[i]}(callDatas[i]);
-            require(success, "transaction failure");
+            if (!success) {
+                // look for revert message
+                if (result.length > 0) {
+                    // solhint-disable-next-line no-inline-assembly
+                    assembly {
+                        let returndata_size := mload(result)
+                        revert(add(32, result), returndata_size)
+                    }
+                } else {
+                    revert("transaction failure");
+                }
+            }
             emit Execution(transactionId, targets[i], values[i], callDatas[i], result);
         }
         txn.executed = true;
