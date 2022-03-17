@@ -28,3 +28,5 @@ or
 
 ## Running coverage
 - `yarn coverage` (Runs coverage for all applicable files)
+
+## Test Push
