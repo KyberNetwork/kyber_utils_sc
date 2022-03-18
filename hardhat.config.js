@@ -1,16 +1,16 @@
-require('dotenv').config()
+require('dotenv').config();
 require('@nomiclabs/hardhat-truffle5');
 require('@nomiclabs/hardhat-web3');
 require('solidity-coverage');
 
-const { testAccounts } = require('./test/wallets');
+const {testAccounts} = require('./test/wallets');
 
 module.exports = {
   defaultNetwork: 'hardhat',
 
   networks: {
     hardhat: {
-      accounts: testAccounts
+      accounts: testAccounts,
     },
   },
 
