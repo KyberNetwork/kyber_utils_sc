@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  - push
+
+env:
+  COVERAGE_BRANCH: master
+
+jobs:
+  lint:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js 10.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+
+      - name: Restore node_modules
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependences
+        uses: bahmutov/npm-install@HEAD
+
+      - name: Install mocha-only-detector
+        run: npm i -g mocha-only-detector
+
+      - name: Update test files
+        run: find test/ -name "*.js" -print0 | xargs -0 mocha-only-detector
+
+      - name: Lint
+        run: yarn lint
+
+  test:
+    needs:
+      - lint
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        include:
+          - part: Regression
+            test: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js 10.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+
+      - name: Restore node_modules
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependences
+        uses: bahmutov/npm-install@HEAD
+
+      - name: Install mocha-only-detector
+        run: npm i -g mocha-only-detector
+
+      - name: Update test files
+        run: find test/ -name "*.js" -print0 | xargs -0 mocha-only-detector
+
+      - name: Compile
+        run: yarn compile
+
+      - name: Test
+        if: ${{ matrix.test }}
+        run: |
+          echo -n "${{ secrets.TEST_PRIVATE_KEYS }}" > .env
+          yarn test
+
+      - name: Report
+        run: node contractSizeReport.js
