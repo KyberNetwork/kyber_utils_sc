@@ -26,7 +26,7 @@ contract('Utils', function (accounts) {
 
   describe('test get balance', async function () {
     it('test get eth balance', async function () {
-      user = accounts[9];
+      user = accounts[4];
       let balanceEth = await Helper.getBalancePromise(user);
       balance = await utils.mockGetBalance(ethAddress, user);
       Helper.assertEqual(balance, balanceEth);
@@ -35,7 +35,7 @@ contract('Utils', function (accounts) {
     it('test get token balance', async function () {
       let token = await TestToken.new('regular', 'reg', 16);
       let tokenBalance = 600;
-      let user = accounts[8];
+      let user = accounts[4];
 
       await token.transfer(user, tokenBalance);
 
