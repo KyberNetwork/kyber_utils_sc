@@ -2,7 +2,6 @@
 This repository contains Kyber utils smart contracts.\
 For more details, please visit our [developer portal](https://developer.kyber.network/)
 
-[![Build Status](https://api.travis-ci.com/KyberNetwork/kyber_utils_sc.svg?branch=master&status=passed)](https://travis-ci.com/github/KyberNetwork/kyber_utils_sc)
 [![built-with openzeppelin](https://img.shields.io/badge/built%20with-OpenZeppelin-3677FF)](https://docs.openzeppelin.com/)
 
 ## Package Manager
