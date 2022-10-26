@@ -9,7 +9,7 @@
     "avoid-throw": "error",
     "avoid-tx-origin": "off",
     "check-send-result": "error",
-    "compiler-version": ["error", "0.7.6"],
+    "compiler-version": ["warn", "0.7.6"],
     "const-name-snakecase": "error",
     "func-name-mixedcase": "error",
     "func-visibility": [
@@ -20,7 +20,7 @@
     ],
     "imports-on-top": "error",
     "mark-callable-contracts": "off",
-    "max-line-length": ["error", 99],
+    "max-line-length": ["error", 129],
     "max-states-count": ["error", 20],
     "multiple-sends": "error",
     "no-complex-fallback": "error",
